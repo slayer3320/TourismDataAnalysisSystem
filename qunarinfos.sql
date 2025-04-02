@@ -39,7 +39,7 @@ CREATE TABLE `app_travelinfo` (
   `cover` varchar(2555) NOT NULL,
   `createTime` date NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1268 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1268 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of app_travelinfo
