@@ -76,34 +76,19 @@
 
     <ul class="sidebar-nav" id="sidebar-nav">
       <li class="nav-item">
-        <a class="nav-link " href="{% url 'home' %}">
+        <a class="nav-link collapsed" href="{% url 'home' %}">
           <i class="bi bi-grid"></i>
           <span>首页</span>
         </a>
       </li>
       
-      <!-- 城市搜索侧边栏 -->
+      <!-- 城市景点分析 -->
       <li class="nav-heading">城市景点分析</li>
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'citySidebarAnalysis' %}">
           <i class="bi bi-search"></i>
           <span>城市景点分析</span>
         </a>
-        
-        <!-- 城市搜索表单 -->
-        {% if request.resolver_match.url_name == 'citySidebarAnalysis' %}
-        <div class="city-search-form p-3">
-          <form action="{% url 'citySidebarAnalysis' %}" method="get">
-            <div class="input-group mb-3">
-              <select class="form-select" name="city" id="citySelect" onchange="this.form.submit()">
-                {% for city in cityList %}
-                <option value="{{ city }}" {% if selectedCity == city %}selected{% endif %}>{{ city }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </form>
-        </div>
-        {% endif %}
       </li>
       
       <li class="nav-heading">个人信息</li>
@@ -538,7 +523,6 @@
 <script src="/static/vendor/apexcharts/apexcharts.min.js"></script>
   <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="/static/vendor/chart.js/chart.min.js"></script>
-  <script src="/static/vendor/echarts/echarts.min.js"></script>
   <script src="/static/vendor/quill/quill.min.js"></script>
   <script src="/static/vendor/simple-datatables/simple-datatables.js"></script>
   <script src="/static/vendor/tinymce/tinymce.min.js"></script>
