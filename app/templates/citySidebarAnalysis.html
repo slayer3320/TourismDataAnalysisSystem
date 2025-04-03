@@ -2,6 +2,10 @@
 
 {% block title %}城市景点分析{% endblock %}
 
+{% block sidebar %}
+  {{ block.super }}
+{% endblock %}
+
 {% block content %}
 <div class="pagetitle" style="display: flex;align-items: center">
   <div style="margin-right: auto">
@@ -19,6 +23,29 @@
 </div>
 
 <section class="section">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">城市选择</h5>
+          <form action="{% url 'citySidebarAnalysis' %}" method="POST">
+            <div class="row mb-3">
+              <label class="col-sm-2 col-form-label">城市</label>
+              <div class="col-sm-10">
+                <select class="form-select" name="province" aria-label="Default select example">
+                  {% for i in cityList %}
+                    <option value="{{ i }}">{{ i }}</option>
+                  {% endfor %}
+                </select>
+                <button style="margin-top:10px" class="btn btn-primary">提交</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="row">
     <!-- 星级占比图表 -->
     <div class="col-lg-6">
