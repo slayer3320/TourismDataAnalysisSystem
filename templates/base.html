@@ -82,15 +82,6 @@
         </a>
       </li>
       
-      <!-- 城市景点分析 -->
-      <li class="nav-heading">城市景点分析</li>
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'citySidebarAnalysis' %}">
-          <i class="bi bi-search"></i>
-          <span>城市景点分析</span>
-        </a>
-      </li>
-      
       <li class="nav-heading">个人信息</li>
       <li class="nav-item">
         <a class="nav-link collapsed"  href="{% url 'changeSelfInfo' %}">
@@ -110,26 +101,13 @@
           <i class="bi bi-bar-chart"></i><span>城市和景点等级分析</span></i>
         </a>
       </li>
-
       <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'rateChar' %}">
-          <i class="bi bi-gem"></i><span>评分情况分析</span>
-        </a>
-      </li><!-- End Icons Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'priceChar' %}">
-          <i class="bi bi-person"></i>
-          <span>价格销量分析</span>
+        <a class="nav-link collapsed" href="{% url 'citySidebarAnalysis' %}">
+          <i class="bi bi-search"></i>
+          <span>城市景点分析</span>
         </a>
       </li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'commentsChar' %}">
-          <i class="bi bi-question-circle"></i>
-          <span>评论分析</span>
-        </a>
-      </li>
+      
       <li class="nav-heading">推荐功能</li>
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'recommendation' %}">
@@ -137,20 +115,6 @@
           <span>推荐算法</span>
         </a>
       </li><!-- End Contact Page Nav -->
-      <li class="nav-heading">词云图</li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'detailIntroCloud' %}">
-          <i class="bi bi-card-list"></i>
-          <span>详情简介词云图</span>
-        </a>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'commentContentCloud' %}">
-          <i class="bi bi-box-arrow-in-right"></i>
-          <span>评论内容词云图</span>
-        </a>
-      </li>
     </ul>
 
   </aside>
