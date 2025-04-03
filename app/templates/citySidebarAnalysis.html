@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}城市景点分析{% endblock %}
+
+{% block content %}
+<div class="pagetitle" style="display: flex;align-items: center">
+  <div style="margin-right: auto">
+    <h1>城市景点分析</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+        <li class="breadcrumb-item active">城市景点分析</li>
+      </ol>
+    </nav>
+  </div>
+  <h5 style="font-weight: normal">
+    {{ nowTime.year }} - {{ nowTime.mon }} - {{ nowTime.day }}
+  </h5>
+</div>
+
+<section class="section">
+  <div class="row">
+    <!-- 星级占比图表 -->
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{ selectedCity }} 景点星级占比</h5>
+          <div id="starRatioChart" style="width:100%;height:400px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 价格分析图表 -->
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{ selectedCity }} 景点价格分析</h5>
+          <div id="priceAnalysisChart" style="width:100%;height:400px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 景点列表 -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card recent-sales overflow-auto">
+        <div class="card-body">
+          <h5 class="card-title">{{ selectedCity }} 景点列表</h5>
+
+          <table class="table table-borderless datatable">
+            <thead>
+              <tr>
+                <th style="width:100px" scope="col">#</th>
+                <th scope="col">景区名</th>
+                <th style="width:100px" scope="col">景区等级</th>
+                <th style="width:100px" scope="col">景区评分</th>
+                <th style="width:100px" scope="col">价格</th>
+                <th style="width:100px" scope="col">月销量</th>
+                <th scope="col" style="text-align:center;width:100px">图片</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in travelList %}
+                <tr>
+                  <th scope="row"><a href="#">#{{ i.id }}</a></th>
+                  <td>{{ i.title }}</td>
+                  <td><a href="#" class="text-primary">{{ i.level }}</a></td>
+                  <td><span class="badge bg-success">{{ i.score }}分</span></td>
+                  <td><span class="text-danger">${{ i.price }}</span></td>
+                  <td><span class="text-primary">{{ i.saleCount }}</span></td>
+                  <td>
+                    <a href="{{ i.detailUrl }}">
+                      <img style="width:100%" src="{{ i.cover }}" alt="">
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block echarts %}
+<script>
+  // 星级占比图表
+  var starRatioChart = echarts.init(document.getElementById('starRatioChart'));
+  var starRatioOption = {
+    title: {
+      text: '景点星级占比',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'item'
+    },
+    legend: {
+      orient: 'vertical',
+      left: 'left'
+    },
+    series: [
+      {
+        name: '星级占比',
+        type: 'pie',
+        radius: '50%',
+        data: {{ starRatioData | safe }},
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
+          }
+        }
+      }
+    ]
+  };
+  starRatioChart.setOption(starRatioOption);
+
+  // 价格分析图表
+  var priceAnalysisChart = echarts.init(document.getElementById('priceAnalysisChart'));
+  var priceAnalysisOption = {
+    title: {
+      text: '景点价格分析',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: {{ priceAnalysisXData | safe }}
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        name: '景点数量',
+        type: 'bar',
+        data: {{ priceAnalysisYData | safe }}
+      }
+    ]
+  };
+  priceAnalysisChart.setOption(priceAnalysisOption);
+</script>
+{% endblock %}

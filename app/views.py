@@ -284,3 +284,72 @@ def commentContentCloud(request):
             'day': day
         }
     })
+
+def citySidebarAnalysis(request):
+    username = request.session.get('username')
+    userInfo = User.objects.get(username=username)
+    year, mon, day = getHomeData.getNowTime()
+    
+    # 获取城市列表
+    cityList = getPublicData.getCityList()
+    
+    # 默认选择第一个城市
+    selectedCity = request.GET.get('city', cityList[0] if cityList else '北京')
+    
+    # 获取选定城市的景点数据
+    travelList = getPublicData.getAllTravelInfoMapData(selectedCity)
+    
+    # 计算星级占比数据
+    starRatioDic = {}
+    for travel in travelList:
+        if starRatioDic.get(travel.level, -1) == -1:
+            starRatioDic[travel.level] = 1
+        else:
+            starRatioDic[travel.level] += 1
+    
+    starRatioData = []
+    for key, value in starRatioDic.items():
+        starRatioData.append({
+            'name': key if key else '未知',
+            'value': value
+        })
+    
+    # 计算价格分析数据
+    priceAnalysisXData = ['免费', '100元以内', '200元以内', '300元以内', '400元以内', '500元以内', '500元以外']
+    priceAnalysisYData = [0 for _ in range(len(priceAnalysisXData))]
+    
+    for travel in travelList:
+        try:
+            price = float(travel.price)
+            if price <= 10:
+                priceAnalysisYData[0] += 1
+            elif price <= 100:
+                priceAnalysisYData[1] += 1
+            elif price <= 200:
+                priceAnalysisYData[2] += 1
+            elif price <= 300:
+                priceAnalysisYData[3] += 1
+            elif price <= 400:
+                priceAnalysisYData[4] += 1
+            elif price <= 500:
+                priceAnalysisYData[5] += 1
+            elif price > 500:
+                priceAnalysisYData[6] += 1
+        except ValueError:
+            # 处理价格不是数字的情况
+            pass
+    
+    return render(request, 'citySidebarAnalysis.html', {
+        'userInfo': userInfo,
+        'nowTime': {
+            'year': year,
+            'mon': getPublicData.monthList[mon - 1],
+            'day': day
+        },
+        'cityList': cityList,
+        'selectedCity': selectedCity,
+        'travelList': travelList,
+        'starRatioData': starRatioData,
+        'priceAnalysisXData': priceAnalysisXData,
+        'priceAnalysisYData': priceAnalysisYData
+    })

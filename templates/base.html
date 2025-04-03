@@ -81,6 +81,31 @@
           <span>首页</span>
         </a>
       </li>
+      
+      <!-- 城市搜索侧边栏 -->
+      <li class="nav-heading">城市景点分析</li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'citySidebarAnalysis' %}">
+          <i class="bi bi-search"></i>
+          <span>城市景点分析</span>
+        </a>
+        
+        <!-- 城市搜索表单 -->
+        {% if request.resolver_match.url_name == 'citySidebarAnalysis' %}
+        <div class="city-search-form p-3">
+          <form action="{% url 'citySidebarAnalysis' %}" method="get">
+            <div class="input-group mb-3">
+              <select class="form-select" name="city" id="citySelect" onchange="this.form.submit()">
+                {% for city in cityList %}
+                <option value="{{ city }}" {% if selectedCity == city %}selected{% endif %}>{{ city }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </form>
+        </div>
+        {% endif %}
+      </li>
+      
       <li class="nav-heading">个人信息</li>
       <li class="nav-item">
         <a class="nav-link collapsed"  href="{% url 'changeSelfInfo' %}">
