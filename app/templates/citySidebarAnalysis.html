@@ -86,7 +86,7 @@
             </thead>
             <tbody>
               {% for i in travelList %}
-                <tr>
+                <tr onclick="window.location.href='/app/travelDetail/{{ i.id }}/'" style="cursor:pointer">
                   <th scope="row"><a href="#">#{{ i.id }}</a></th>
                   <td>{{ i.title }}</td>
                   <td><a href="#" class="text-primary">{{ i.level }}</a></td>

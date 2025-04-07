@@ -1,0 +1,70 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h2 class="card-title">{{ travel.title }}</h2>
+          <div class="d-flex justify-content-between mb-3">
+            <span class="badge bg-primary">{{ travel.level }}</span>
+            <span class="badge bg-success">{{ travel.score }}分</span>
+            <span class="text-danger fw-bold">¥{{ travel.price }}</span>
+            <span class="text-muted">月销: {{ travel.saleCount }}</span>
+          </div>
+          
+          <div class="mb-3">
+            <h5>景区地址</h5>
+            <p>{{ travel.province }} {{ travel.detailAddress }}</p>
+          </div>
+          
+          <div class="mb-3">
+            <h5>简短介绍</h5>
+            <p>{{ travel.shortIntro }}</p>
+          </div>
+          
+          <div class="mb-3">
+            <h5>详细介绍</h5>
+            <p>{{ travel.detailIntro }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card mb-4">
+        <div class="card-body">
+          <h4 class="card-title">景区图片</h4>
+          <div class="row">
+            {% for img in travel.img_list %}
+            <div class="col-md-4 mb-3">
+              <img src="{{ img }}" class="img-fluid rounded" alt="景区图片">
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h4 class="card-title">游客评价</h4>
+          <div class="d-flex justify-content-between mb-2">
+            <span>总评价数: {{ travel.commentsLen }}</span>
+            <span>平均评分: {{ travel.score }}分</span>
+          </div>
+          
+          <div class="list-group">
+            {% for comment in travel.comments %}
+            <div class="list-group-item mb-2">
+              <div class="d-flex justify-content-between">
+                <strong>{{ comment.author }}</strong>
+                <span class="text-warning">{{ comment.score }}分</span>
+              </div>
+              <p class="mb-1">{{ comment.content }}</p>
+              <small class="text-muted">{{ comment.date }}</small>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

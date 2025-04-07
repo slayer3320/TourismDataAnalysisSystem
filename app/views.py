@@ -353,3 +353,46 @@ def citySidebarAnalysis(request):
         'priceAnalysisXData': priceAnalysisXData,
         'priceAnalysisYData': priceAnalysisYData
     })
+
+def travelDetail(request, id):
+    username = request.session.get('username')
+    userInfo = User.objects.get(username=username)
+    year, mon, day = getHomeData.getNowTime()
+    
+    # 获取景点详细信息
+    travel = TravelInfo.objects.get(id=id)
+    
+    # 处理评论数据
+    try:
+        comments = eval(travel.comments) if travel.comments else []
+    except:
+        comments = []
+    
+    # 处理图片列表
+    try:
+        img_list = eval(travel.img_list) if travel.img_list else []
+    except:
+        img_list = []
+    
+    return render(request, 'travelDetail.html', {
+        'userInfo': userInfo,
+        'nowTime': {
+            'year': year,
+            'mon': getPublicData.monthList[mon - 1],
+            'day': day
+        },
+        'travel': {
+            'title': travel.title,
+            'level': travel.level,
+            'score': travel.score,
+            'price': travel.price,
+            'saleCount': travel.saleCount,
+            'province': travel.province,
+            'detailAddress': travel.detailAddress,
+            'shortIntro': travel.shortIntro,
+            'detailIntro': travel.detailIntro,
+            'img_list': img_list,
+            'comments': comments,
+            'commentsLen': travel.commentsLen
+        }
+    })
