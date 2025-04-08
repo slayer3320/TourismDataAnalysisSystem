@@ -23,8 +23,46 @@
         </h5>
     </div>
 
+    <section class="section dashboard">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">筛选条件</h5>
+          <form method="get" class="row g-3">
+            <div class="col-md-4">
+              <label for="region" class="form-label">地区</label>
+              <select id="region" name="region" class="form-select">
+                <option value="">全部地区</option>
+                {% for city in cityList %}
+                <option value="{{ city }}" {% if filter_params.region == city %}selected{% endif %}>{{ city }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="min_price" class="form-label">最低价格</label>
+              <input type="number" class="form-control" id="min_price" name="min_price" 
+                     placeholder="0" value="{{ filter_params.min_price }}">
+            </div>
+            <div class="col-md-4">
+              <label for="max_price" class="form-label">最高价格</label>
+              <input type="number" class="form-control" id="max_price" name="max_price" 
+                     placeholder="不限" value="{{ filter_params.max_price }}">
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary">筛选</button>
+              <a href="{% url 'recommendation' %}" class="btn btn-secondary">重置</a>
+            </div>
+          </form>
+        </div>
+      </div>
 
-      <section class="section dashboard">
+      {% if filter_params.region or filter_params.min_price or filter_params.max_price %}
+      <div class="alert alert-info">
+        当前筛选条件: 
+        {% if filter_params.region %}地区: {{ filter_params.region }}{% endif %}
+        {% if filter_params.min_price %} 最低价格: {{ filter_params.min_price }}元{% endif %}
+        {% if filter_params.max_price %} 最高价格: {{ filter_params.max_price }}元{% endif %}
+      </div>
+      {% endif %}
 
             <div class="row">
                 {% for i in resultDataList %}

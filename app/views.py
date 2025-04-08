@@ -242,12 +242,39 @@ def recommendation(request):
     username = request.session.get('username')
     userInfo = User.objects.get(username=username)
     year, mon, day = getHomeData.getNowTime()
+    
+    # 获取筛选参数
+    region = request.GET.get('region') or request.POST.get('region')
+    min_price = request.GET.get('min_price') or request.POST.get('min_price')
+    max_price = request.GET.get('max_price') or request.POST.get('max_price')
+    # types = request.GET.getlist('types') or request.POST.getlist('types')
+    
+    try:
+        min_price = float(min_price) if min_price else None
+        max_price = float(max_price) if max_price else None
+    except (ValueError, TypeError):
+        min_price = max_price = None
+    
     try:
         user_ratings = getUser_ratings()
         recommended_items = user_bases_collaborative_filtering(userInfo.id, user_ratings)
-        resultDataList = getRecommendationData.getAllTravelByTitle(recommended_items)
+        resultDataList = getRecommendationData.getAllTravelByTitle(
+            recommended_items,
+            region=region,
+            min_price=min_price,
+            max_price=max_price
+            # types=types
+        )
     except:
-        resultDataList = getRecommendationData.getRandomTravel()
+        resultDataList = getRecommendationData.getRandomTravel(
+            region=region,
+            min_price=min_price,
+            max_price=max_price
+            # types=types
+        )
+
+    # 获取地区列表用于下拉框
+    cityList = getPublicData.getCityList()
 
     return render(request, 'recommendation.html', {
         'userInfo': userInfo,
@@ -256,7 +283,14 @@ def recommendation(request):
             'mon': getPublicData.monthList[mon - 1],
             'day': day
         },
-        'resultDataList':resultDataList
+        'resultDataList': resultDataList,
+        'cityList': cityList,
+        'filter_params': {
+            'region': region,
+            'min_price': min_price,
+            'max_price': max_price
+            # 'types': types
+        }
     })
 
 def detailIntroCloud(request):
