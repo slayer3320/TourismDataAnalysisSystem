@@ -1,1 +1,126 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
+<div class="pagetitle">
+  <h1>热门景区地图</h1>
+</div>
+
+<section class="section dashboard">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div id="mains" style="width: 100%; height: 80vh"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} {% block echarts %}
+<script>
+  var myChart = echarts.init(document.getElementById('mains'));
+  var mydata = {{ geoData | safe }}
+  var options = {
+    tooltip: {
+      triggerOn: "mousemove",
+      padding:8,
+      borderWidth:1,
+      borderColor:'#409eff',
+      backgroundColor:'rgba(255,255,255,0.2)',
+      textStyle:{
+        color:'#000',
+        fontSize:12
+      },
+      formatter: function(e, t, n) {
+        let data = e.data;
+        return data ? '城市：' + data.name + '\t景点数：' + data.value : '暂未拥有数据'
+      }
+    },
+    visualMap: {
+      show:true,
+      left: 26,
+      bottom: 40,
+      showLabel:true,
+      pieces: [
+        {
+          gte: 300,
+          label: ">= 300",
+          color: "#ff7979"
+        },
+        {
+          gte: 150,
+          lt: 300,
+          label: "150 - 300",
+          color: "#badc58"
+        },
+        {
+          gte: 100,
+          lt: 150,
+          label: "100 - 150",
+          color: "#ffbe76"
+        },
+        {
+          gte: 50,
+          lt:100,
+          label: "50 - 100",
+          color: "#f6e58d"
+        },
+        {
+          gte: 10,
+          lt: 50,
+          label: "10 - 50",
+          color: "#7ed6df"
+        },
+        {
+          lt:10,
+          label:'<10',
+          color: "orange"
+        }
+      ]
+    },
+    geo: {
+      map: "china",
+      roam: true,
+      scaleLimit: {
+        min: 1,
+        max: 2
+      },
+      zoom: 1,
+      top: 10,
+      layoutSize: "100%",
+      label: {
+        normal: {
+          show:true,
+          fontSize: "14",
+          color: "#fff"
+        },
+        emphasis: {
+          show: false,
+          textStyle: {
+            color: "#F3F3F3"
+          }
+        }
+      },
+      itemStyle: {
+        normal: {
+          borderColor: "rgba(0, 0, 0, 0.4)",
+          areaColor: '#008c8c',
+        },
+        emphasis: {
+          areaColor: "orange",
+          shadowOffsetX: 0,
+          shadowOffsetY: 0,
+          borderWidth: 0
+        }
+      }
+    },
+    series: [
+      {
+        name: "成果预览",
+        type: "map",
+        geoIndex: 0,
+        data: mydata
+      }
+    ]
+  }
+  myChart.setOption(options);
+</script>
+{% endblock %}
