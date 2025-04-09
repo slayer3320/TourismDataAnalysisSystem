@@ -49,23 +49,26 @@ def getNowTime():
     return year,mon,day
 
 def getGeoData():
+    provinceAttractions = {}  # {province: set(attraction_names)}
+    
+    # First collect all unique attraction names per province
+    for travel in travelMapData:
+        if travel.province not in provinceAttractions:
+            provinceAttractions[travel.province] = set()
+        provinceAttractions[travel.province].add(travel.title)
+    
+    # Map provinces to their cityList provinces and count unique attractions
     dataDic = {}
-    for i in travelMapData:
+    for province, attractions in provinceAttractions.items():
         for j in getPublicData.cityList:
             for city in j['city']:
-                if city.find(i.province) != -1:
-                    if dataDic.get(j['province'],-1) == -1:
-                        dataDic[j['province']] = 1
-                    else:
-                        dataDic[j['province']] += 1
+                if city.find(province) != -1:
+                    if j['province'] not in dataDic:
+                        dataDic[j['province']] = 0
+                    dataDic[j['province']] += len(attractions)
+                    break  # Found matching city, move to next province
 
-    resutData = []
-    for key,value in dataDic.items():
-        resutData.append({
-            'name':key,
-            'value':value
-        })
-    return resutData
+    return [{'name': province, 'value': count} for province, count in dataDic.items()]
 
 def getUserCreateTimeData():
     dataDic = {}
@@ -82,4 +85,3 @@ def getUserCreateTimeData():
             'value': value
         })
     return resutData
-

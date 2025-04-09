@@ -39,42 +39,55 @@
       left: 26,
       bottom: 40,
       showLabel:true,
-      pieces: [
-        {
-          gte: 300,
-          label: ">= 300",
-          color: "#ff7979"
-        },
-        {
-          gte: 150,
-          lt: 300,
-          label: "150 - 300",
-          color: "#badc58"
-        },
-        {
-          gte: 100,
-          lt: 150,
-          label: "100 - 150",
-          color: "#ffbe76"
-        },
-        {
-          gte: 50,
-          lt:100,
-          label: "50 - 100",
-          color: "#f6e58d"
-        },
-        {
-          gte: 10,
-          lt: 50,
-          label: "10 - 50",
-          color: "#7ed6df"
-        },
-        {
-          lt:10,
-          label:'<10',
-          color: "orange"
-        }
-      ]
+      pieces: (function() {
+        // Calculate quantiles from the data
+        const values = mydata.map(item => item.value).sort((a,b) => a - b);
+        const n = values.length;
+        const quantiles = [
+          values[Math.floor(n * 0.8)],  // 80th percentile
+          values[Math.floor(n * 0.6)],  // 60th
+          values[Math.floor(n * 0.4)],  // 40th
+          values[Math.floor(n * 0.2)],  // 20th
+          values[Math.floor(n * 0.1)]   // 10th
+        ];
+
+        return [
+          {
+            gte: quantiles[0],
+            label: `Top 20% (>=${quantiles[0]})`,
+            color: "#f38181"  // Coral (highest density)
+          },
+          {
+            gte: quantiles[1],
+            lt: quantiles[0],
+            label: `20-40% (${quantiles[1]}-${quantiles[0]})`,
+            color: "#fce38a"  // Yellow
+          },
+          {
+            gte: quantiles[2],
+            lt: quantiles[1],
+            label: `40-60% (${quantiles[2]}-${quantiles[1]})`,
+            color: "#eaffd0"  // Light green
+          },
+          {
+            gte: quantiles[3],
+            lt: quantiles[2],
+            label: `60-80% (${quantiles[3]}-${quantiles[2]})`,
+            color: "#95e1d3"  // Teal
+          },
+          {
+            gte: quantiles[4],
+            lt: quantiles[3],
+            label: `80-90% (${quantiles[4]}-${quantiles[3]})`,
+            color: "#d3f6f3"  // Pale teal
+          },
+          {
+            lt: quantiles[4],
+            label: `Bottom 10% (<${quantiles[4]})`,
+            color: "#f0fdfa"  // Very pale teal
+          }
+        ];
+      })()
     },
     geo: {
       map: "china",
@@ -88,14 +101,33 @@
       layoutSize: "100%",
       label: {
         normal: {
-          show:true,
-          fontSize: "14",
-          color: "#fff"
+          show: true,
+          position: 'center',
+          fontSize: 12,
+          color: '#fff',
+          fontWeight: 'bold',
+          textBorderColor: '#000',
+          textBorderWidth: 1,
+          formatter: function(params) {
+            // Shorten long province names for better display
+            const shortNames = {
+              '内蒙古自治区': '内蒙古',
+              '广西壮族自治区': '广西',
+              '西藏自治区': '西藏',
+              '宁夏回族自治区': '宁夏',
+              '新疆维吾尔自治区': '新疆',
+              '香港特别行政区': '香港',
+              '澳门特别行政区': '澳门'
+            };
+            return shortNames[params.name] || params.name;
+          }
         },
         emphasis: {
-          show: false,
+          show: true,
           textStyle: {
-            color: "#F3F3F3"
+            color: "#fff",
+            fontSize: 14,
+            fontWeight: 'bold'
           }
         }
       },
