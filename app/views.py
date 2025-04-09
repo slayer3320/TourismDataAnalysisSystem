@@ -1,6 +1,7 @@
 #render函数用于将数据渲染到指定的模板中，并返回生成的HTML内容
 #redirect允许你将用户从一个URL重定向到另一个URL，通常用于处理单表提交、用户登录、注册等操作后的页面跳转
 
+import jieba
 from django.shortcuts import render,redirect
 from app.models import User,TravelInfo
 from django.http import HttpResponse
@@ -373,6 +374,45 @@ def citySidebarAnalysis(request):
             # 处理价格不是数字的情况
             pass
     
+    # Prepare word cloud data from attraction titles
+    wordCloudData = []
+    title_counts = {}
+    for travel in travelList:
+        title = travel.title
+        if title in title_counts:
+            title_counts[title] += 1
+        else:
+            title_counts[title] = 1
+    
+    for title, count in title_counts.items():
+        wordCloudData.append({
+            'name': title,
+            'value': count * 10  # Scale for better visualization
+        })
+
+    # Prepare word cloud data from comments
+    commentCloudData = []
+    comment_counts = {}
+    for travel in travelList:
+        try:
+            comments = eval(travel.comments) if travel.comments else []
+            for comment in comments:
+                words = jieba.cut(comment['content'])
+                for word in words:
+                    if len(word) > 1:  # Only include words with 2+ characters
+                        if word in comment_counts:
+                            comment_counts[word] += 1
+                        else:
+                            comment_counts[word] = 1
+        except:
+            continue
+    
+    for word, count in comment_counts.items():
+        commentCloudData.append({
+            'name': word,
+            'value': count * 5  # Scale for better visualization
+        })
+
     return render(request, 'citySidebarAnalysis.html', {
         'userInfo': userInfo,
         'nowTime': {
@@ -385,7 +425,9 @@ def citySidebarAnalysis(request):
         'travelList': travelList,
         'starRatioData': starRatioData,
         'priceAnalysisXData': priceAnalysisXData,
-        'priceAnalysisYData': priceAnalysisYData
+        'priceAnalysisYData': priceAnalysisYData,
+        'wordCloudData': wordCloudData,
+        'commentCloudData': commentCloudData
     })
 
 def travelDetail(request, id):

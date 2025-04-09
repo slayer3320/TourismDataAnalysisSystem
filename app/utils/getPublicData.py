@@ -1,5 +1,6 @@
 from app.models import TravelInfo,User
 import json
+from pypinyin import pinyin, Style
 
 monthList = ['January','February','March','April','May','June','July','August','Suptember','October','November','December']
 
@@ -70,7 +71,10 @@ cityList = [
 
 def getCityList():
     travelList = getAllTravelInfoMapData()
-    return list(set([x.province for x in travelList]))
+    city_list = list(set([x.province for x in travelList]))
+    # Sort cities by Chinese pinyin (first character)
+    city_list.sort(key=lambda x: pinyin(x, style=Style.FIRST_LETTER)[0][0].lower())
+    return city_list
 
 def getAllTravelInfoMapData(province=None):
     def map_fn(item):
