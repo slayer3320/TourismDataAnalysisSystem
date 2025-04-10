@@ -23,6 +23,7 @@
 </head>
 
 <body>
+  {% csrf_token %}
 
   <header id="header" class="header fixed-top d-flex align-items-center">
 
@@ -115,6 +116,12 @@
         <a class="nav-link collapsed" href="{% url 'recommendation' %}">
           <i class="bi bi-envelope"></i>
           <span>推荐算法</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'ai_chat' %}">
+          <i class="bi bi-robot"></i>
+          <span>AI旅游助手</span>
         </a>
       </li><!-- End Contact Page Nav -->
     </ul>
@@ -330,7 +337,7 @@
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="copyright">
-      Copyright &copy; 2023.<a target="_blank" href="{% url 'home' %}">旅游数据分析推荐系统</a>
+      Copyright &copy; 2025.<a target="_blank" href="{% url 'home' %}">SightSeek分析公司</a>
     </div>
     <div class="credits">
     </div>

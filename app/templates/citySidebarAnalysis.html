@@ -8,8 +8,11 @@
 
 {% block content %}
 <div class="pagetitle" style="display: flex;align-items: center">
-  <div style="margin-right: auto">
-    <h1>城市景点分析</h1>
+  <div style="margin-right: auto; display: flex; align-items: center; gap: 10px">
+    <h1 style="margin: 0">城市景点分析</h1>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="#4154f1" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+    </svg>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>

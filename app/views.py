@@ -3,6 +3,7 @@
 
 import jieba
 from django.shortcuts import render,redirect
+from django.http import JsonResponse
 from app.models import User,TravelInfo
 from django.http import HttpResponse
 from app.recommdation import getUser_ratings,user_bases_collaborative_filtering
@@ -472,3 +473,6 @@ def travelDetail(request, id):
             'commentsLen': travel.commentsLen
         }
     })
+
+def ai_chat(request):
+    return render(request, 'ai_chat.html')

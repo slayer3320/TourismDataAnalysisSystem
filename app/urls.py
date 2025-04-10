@@ -20,4 +20,5 @@ urlpatterns = [
     path('commentContentCloud/',views.commentContentCloud, name='commentContentCloud'),
     path('citySidebarAnalysis/',views.citySidebarAnalysis, name='citySidebarAnalysis'),
     path('travelDetail/<int:id>/',views.travelDetail, name='travelDetail'),
+    path('ai/', views.ai_chat, name='ai_chat'),
 ]
