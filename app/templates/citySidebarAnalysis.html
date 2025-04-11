@@ -31,14 +31,58 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">城市选择</h5>
+          <div class="alert alert-info mb-3" id="citySelectionAlert">
+            当前选择: <span id="currentProvince">{{ provinceList.0 }}</span> - <span id="currentCity">{{ selectedCity }}</span>
+          </div>
           <div class="row mb-3">
-            <label class="col-sm-2 col-form-label">城市</label>
-            <div class="col-sm-10">
-              <select class="form-select" id="citySelect" aria-label="Default select example">
-                {% for i in cityList %}
-                  <option value="{{ i }}" {% if i == selectedCity %}selected{% endif %}>{{ i }}</option>
+            <div class="col-sm-12">
+              <div class="row align-items-center mb-3">
+                <div class="col-sm-6">
+                  <div class="row align-items-center">
+                    <label class="col-sm-4 col-form-label">省份</label>
+                    <div class="col-sm-8">
+                      <select id="provinceSelect" class="form-select">
+                        {% for province in provinceList %}
+                          <option value="{{ province }}">{{ province }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="row align-items-center">
+                    <label class="col-sm-4 col-form-label">城市</label>
+                    <div class="col-sm-8">
+                      <select id="citySelect" name="city" class="form-select">
+                {% for city in cityList %}
+                  <option value="{{ city }}" {% if city == selectedCity %}selected{% endif %}>{{ city }}</option>
                 {% endfor %}
               </select>
+
+              <script>
+              document.getElementById('provinceSelect').addEventListener('change', function() {
+                  const province = this.value;
+                  document.getElementById('currentProvince').textContent = province;
+                  fetch(`/app/get_cities?province=${encodeURIComponent(province)}`)
+                      .then(response => response.json())
+                      .then(cities => {
+                          const citySelect = document.getElementById('citySelect');
+                          citySelect.innerHTML = '';
+                          cities.forEach(city => {
+                              const option = document.createElement('option');
+                              option.value = city;
+                              option.textContent = city;
+                              citySelect.appendChild(option);
+                          });
+                          // 更新当前城市显示
+                          document.getElementById('currentCity').textContent = cities[0];
+                      });
+              });
+
+              document.getElementById('citySelect').addEventListener('change', function() {
+                  document.getElementById('currentCity').textContent = this.value;
+              });
+              </script>
             </div>
           </div>
         </div>

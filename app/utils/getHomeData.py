@@ -51,22 +51,19 @@ def getNowTime():
 def getGeoData():
     provinceAttractions = {}  # {province: set(attraction_names)}
     
-    # First collect all unique attraction names per province
+    # Collect all unique attraction names per province
     for travel in travelMapData:
         if travel.province not in provinceAttractions:
             provinceAttractions[travel.province] = set()
         provinceAttractions[travel.province].add(travel.title)
     
-    # Map provinces to their cityList provinces and count unique attractions
+    # Count attractions per province
     dataDic = {}
     for province, attractions in provinceAttractions.items():
-        for j in getPublicData.cityList:
-            for city in j['city']:
-                if city.find(province) != -1:
-                    if j['province'] not in dataDic:
-                        dataDic[j['province']] = 0
-                    dataDic[j['province']] += len(attractions)
-                    break  # Found matching city, move to next province
+        # Directly use the province name from travel data
+        if province not in dataDic:
+            dataDic[province] = 0
+        dataDic[province] += len(attractions)
 
     return [{'name': province, 'value': count} for province, count in dataDic.items()]
 

@@ -169,8 +169,9 @@ def rateChar(request):
     username = request.session.get('username')
     userInfo = User.objects.get(username=username)
     year, mon, day = getHomeData.getNowTime()
-    cityList = getPublicData.getCityList()
-    travelList = getPublicData.getAllTravelInfoMapData(cityList[0])
+    provinceList = getPublicData.getProvinceList()
+    cityList = getPublicData.getCityList(provinceList[0])
+    travelList = getPublicData.getAllTravelInfoMapData(cityList[0] if cityList else None)
     charOneData = getEchartsData.getRateCharDataOne(travelList)
     charTwoData = getEchartsData.getRateCharDataTwo(travelList)
     if request.method == 'POST':
@@ -195,6 +196,7 @@ def priceChar(request):
     username = request.session.get('username')
     userInfo = User.objects.get(username=username)
     year, mon, day = getHomeData.getNowTime()
+    provinceList = getPublicData.getProvinceList()
     cityList = getPublicData.getCityList()
     travelList = getPublicData.getAllTravelInfoMapData()
     xData,yData = getEchartsData.getPriceCharDataOne(travelList)
@@ -280,6 +282,7 @@ def recommendation(request):
         )
 
     # 获取地区列表用于下拉框
+    provinceList = getPublicData.getProvinceList()
     cityList = getPublicData.getCityList()
 
     return render(request, 'recommendation.html', {
@@ -332,7 +335,14 @@ def citySidebarAnalysis(request):
     year, mon, day = getHomeData.getNowTime()
     
     # 获取城市列表
-    cityList = getPublicData.getCityList()
+    provinceList = getPublicData.getProvinceList()
+    if not provinceList:  # 如果省份列表为空
+        provinceList = ['直辖市', '港澳台', '海南', '浙江', '广东']  # 默认省份列表
+    cityList = getPublicData.getCityList(provinceList[0]) if provinceList else []
+    
+    # 确保provinceList和cityList不为None
+    provinceList = provinceList or []
+    cityList = cityList or []
     
     # 默认选择第一个城市
     selectedCity = request.GET.get('city', cityList[0] if cityList else '北京')
@@ -426,6 +436,7 @@ def citySidebarAnalysis(request):
             'mon': getPublicData.monthList[mon - 1],
             'day': day
         },
+        'provinceList': provinceList,
         'cityList': cityList,
         'selectedCity': selectedCity,
         'travelList': travelList,
@@ -481,3 +492,55 @@ def travelDetail(request, id):
 
 def ai_chat(request):
     return render(request, 'ai_chat.html')
+
+def ai_chat_api(request):
+    if request.method == 'POST':
+        try:
+            import json
+            from django.http import JsonResponse, StreamingHttpResponse
+            from time import sleep
+            
+            data = json.loads(request.body)
+            message = data.get('message', '')
+            
+            def generate_response():
+                if "北京" in message and "日游" in message:
+                    days = message.split("日游")[0].split("北京")[1].strip()
+                    content = f"为您推荐北京{days}日游行程：\n\n第一天：\n- 上午：天安门广场、故宫\n- 下午：景山公园俯瞰故宫全景\n- 晚上：王府井步行街\n\n第二天：\n- 上午：颐和园\n- 下午：圆明园\n- 晚上：三里屯酒吧街\n\n第三天：\n- 上午：长城一日游（推荐八达岭或慕田峪）\n- 下午：返回市区，参观鸟巢、水立方\n\n小贴士：\n1. 故宫需提前预约门票\n2. 长城较远，建议包车或参加一日游\n3. 北京交通拥堵，请预留充足时间"
+                else:
+                    content = f"您好！我是SightSeekAI旅游助手。\n\n关于'{message}'，我可以为您提供以下帮助：\n1. 目的地推荐\n2. 行程规划\n3. 景点介绍\n4. 当地美食推荐\n5. 交通指南\n\n请告诉我您更具体的需求，例如：\n- '上海3日游推荐'\n- '北京必去景点'\n- '成都美食攻略'"
+                
+                for i in range(0, len(content), 10):
+                    chunk = content[i:i+10]
+                    yield json.dumps({
+                        "choices": [{
+                            "message": {
+                                "content": chunk,
+                                "role": "assistant"
+                            }
+                        }]
+                    })
+                    sleep(0.1)  # 模拟流式输出延迟
+
+            return StreamingHttpResponse(generate_response(), content_type='application/json')
+            
+        except Exception as e:
+            return JsonResponse({
+                "error": str(e)
+            }, status=500)
+    
+    return JsonResponse({
+        "error": "只支持POST请求"
+    }, status=405)
+
+def get_cities(request):
+    province = request.GET.get('province')
+    city_list = getPublicData.getCityList(province)
+    return JsonResponse(city_list, safe=False)
+
+def debug_province_list(request):
+    province_list = getPublicData.getProvinceList()
+    return JsonResponse({
+        'provinceList': province_list,
+        'source': 'city.json' if province_list else 'default'
+    }, safe=False)

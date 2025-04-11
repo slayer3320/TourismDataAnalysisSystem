@@ -1,5 +1,15 @@
-// Filter Functionality
+// Sidebar and Filter Functionality
 document.addEventListener("DOMContentLoaded", function () {
+  // Toggle sidebar on mobile
+  const sidebarToggle = document.querySelector(".toggle-sidebar-btn");
+  const sidebar = document.querySelector(".sidebar");
+
+  if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener("click", function () {
+      document.body.classList.toggle("toggle-sidebar");
+    });
+  }
+
   // Toggle filters
   const toggleBtn = document.querySelector(".toggle-filters");
   const filterForm = document.querySelector(".filter-form");

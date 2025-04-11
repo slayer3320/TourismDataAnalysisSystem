@@ -553,6 +553,15 @@ h6 {
 @media (max-width: 1199px) {
   .sidebar {
     left: -300px;
+    transition: all 0.3s;
+  }
+
+  body.toggle-sidebar .sidebar {
+    left: 0;
+  }
+
+  .toggle-sidebar-btn {
+    display: block;
   }
 }
 .sidebar::-webkit-scrollbar {
