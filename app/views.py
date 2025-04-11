@@ -249,7 +249,8 @@ def recommendation(request):
     region = request.GET.get('region') or request.POST.get('region')
     min_price = request.GET.get('min_price') or request.POST.get('min_price')
     max_price = request.GET.get('max_price') or request.POST.get('max_price')
-    # types = request.GET.getlist('types') or request.POST.getlist('types')
+    score = request.GET.get('score') or request.POST.get('score')
+    level = request.GET.get('level') or request.POST.get('level')
     
     try:
         min_price = float(min_price) if min_price else None
@@ -264,14 +265,17 @@ def recommendation(request):
             recommended_items,
             region=region,
             min_price=min_price,
-            max_price=max_price
-            # types=types
+            max_price=max_price,
+            score=score,
+            level=level
         )
     except:
         resultDataList = getRecommendationData.getRandomTravel(
             region=region,
             min_price=min_price,
-            max_price=max_price
+            max_price=max_price,
+            score=score,
+            level=level
             # types=types
         )
 
@@ -290,8 +294,9 @@ def recommendation(request):
         'filter_params': {
             'region': region,
             'min_price': min_price,
-            'max_price': max_price
-            # 'types': types
+            'max_price': max_price,
+            'score': score,
+            'level': level
         }
     })
 

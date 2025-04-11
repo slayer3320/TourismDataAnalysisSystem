@@ -28,7 +28,12 @@ a:hover {
   text-decoration: none;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: "Nunito", sans-serif;
 }
 
@@ -105,7 +110,8 @@ h1, h2, h3, h4, h5, h6 {
   border: 0;
   box-shadow: 0 5px 30px 0 rgba(82, 63, 105, 0.2);
 }
-.dropdown-menu .dropdown-header, .dropdown-menu .dropdown-footer {
+.dropdown-menu .dropdown-header,
+.dropdown-menu .dropdown-footer {
   text-align: center;
   font-size: 15px;
   padding: 10px 25px;
@@ -215,7 +221,8 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
 }
 
-.card-header, .card-footer {
+.card-header,
+.card-footer {
   border-color: #ebeef4;
   background-color: #fff;
   color: #798eb3;
@@ -318,7 +325,8 @@ h1, h2, h3, h4, h5, h6 {
   border: none;
   color: #2c384e;
 }
-.nav-tabs-bordered .nav-link:hover, .nav-tabs-bordered .nav-link:focus {
+.nav-tabs-bordered .nav-link:hover,
+.nav-tabs-bordered .nav-link:focus {
   color: #4154f1;
 }
 .nav-tabs-bordered .nav-link.active {
@@ -402,7 +410,8 @@ h1, h2, h3, h4, h5, h6 {
   transition: 0.3s;
   width: 100%;
 }
-.header .search-form input:focus, .header .search-form input:hover {
+.header .search-form input:focus,
+.header .search-form input:hover {
   outline: none;
   box-shadow: 0 0 10px 0 rgba(1, 41, 112, 0.15);
   border: 1px solid rgba(1, 41, 112, 0.3);
@@ -556,7 +565,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (min-width: 1200px) {
-  #main, #footer {
+  #main,
+  #footer {
     margin-left: 300px;
   }
 }
@@ -566,7 +576,8 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 @media (min-width: 1200px) {
-  .toggle-sidebar #main, .toggle-sidebar #footer {
+  .toggle-sidebar #main,
+  .toggle-sidebar #footer {
     margin-left: 0;
   }
   .toggle-sidebar .sidebar {
@@ -652,7 +663,8 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 0;
   border-radius: 50%;
 }
-.sidebar-nav .nav-content a:hover, .sidebar-nav .nav-content a.active {
+.sidebar-nav .nav-content a:hover,
+.sidebar-nav .nav-content a.active {
   color: #4154f1;
 }
 .sidebar-nav .nav-content a.active i {
@@ -662,6 +674,81 @@ h1, h2, h3, h4, h5, h6 {
 /*--------------------------------------------------------------
 # Dashboard
 --------------------------------------------------------------*/
+/* Price Input Styles */
+.price-input-group {
+  display: flex;
+  gap: 15px;
+}
+
+.price-input-group .form-control {
+  flex: 1;
+  min-width: 0;
+}
+
+.price-input-group .input-group-text {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+}
+
+/* Filter Groups */
+.filter-group {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.filter-group-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #012970;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.filter-form.collapsed .filter-group {
+  display: none;
+}
+
+.filter-form.collapsed .filter-group:first-child {
+  display: block;
+}
+
+.filter-form.collapsed .toggle-filters .bi-chevron-down {
+  transform: rotate(180deg);
+}
+
+.filter-actions {
+  padding-top: 10px;
+  border-top: 1px solid #e9ecef;
+}
+
+/* Filter Tags */
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-tags .badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 20px;
+}
+
+/* Alert Improvements */
+.alert-primary {
+  border-left: 4px solid #4154f1;
+}
+
+.alert-heading {
+  font-size: 16px;
+  color: #012970;
+}
 /* Filter dropdown */
 .dashboard .filter {
   position: absolute;
@@ -675,7 +762,8 @@ h1, h2, h3, h4, h5, h6 {
   transition: 0.3s;
   font-size: 16px;
 }
-.dashboard .filter .icon:hover, .dashboard .filter .icon:focus {
+.dashboard .filter .icon:hover,
+.dashboard .filter .icon:focus {
   color: #4154f1;
 }
 .dashboard .filter .dropdown-header {
@@ -980,13 +1068,15 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-animation: animate-loading 1s linear infinite;
   animation: animate-loading 1s linear infinite;
 }
-.contact .php-email-form input, .contact .php-email-form textarea {
+.contact .php-email-form input,
+.contact .php-email-form textarea {
   border-radius: 0;
   box-shadow: none;
   font-size: 14px;
   border-radius: 0;
 }
-.contact .php-email-form input:focus, .contact .php-email-form textarea:focus {
+.contact .php-email-form input:focus,
+.contact .php-email-form textarea:focus {
   border-color: #4154f1;
 }
 .contact .php-email-form input {
@@ -995,7 +1085,7 @@ h1, h2, h3, h4, h5, h6 {
 .contact .php-email-form textarea {
   padding: 12px 15px;
 }
-.contact .php-email-form button[type=submit] {
+.contact .php-email-form button[type="submit"] {
   background: #4154f1;
   border: 0;
   padding: 10px 30px;
@@ -1003,7 +1093,7 @@ h1, h2, h3, h4, h5, h6 {
   transition: 0.4s;
   border-radius: 4px;
 }
-.contact .php-email-form button[type=submit]:hover {
+.contact .php-email-form button[type="submit"]:hover {
   background: #5969f3;
 }
 @-webkit-keyframes animate-loading {
@@ -1089,7 +1179,7 @@ h1, h2, h3, h4, h5, h6 {
   height: 450px;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
 }
 
@@ -1103,7 +1193,7 @@ h1, h2, h3, h4, h5, h6 {
   background: #fff;
   border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
 }
 
 .titleview {
@@ -1160,7 +1250,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .commentItem {
   border: none;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .commentItem .card-body {
@@ -1173,7 +1263,7 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1190,13 +1280,13 @@ h1, h2, h3, h4, h5, h6 {
   .swiper {
     height: 300px;
   }
-  
+
   .title h1 {
     font-size: 22px;
   }
-  
+
   .page-loader {
-    background: rgba(255,255,255,0.95);
+    background: rgba(255, 255, 255, 0.95);
   }
 }
 .baseInfoModule {
@@ -1213,7 +1303,7 @@ h1, h2, h3, h4, h5, h6 {
   height: 400px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .swiper-slide img {
@@ -1322,7 +1412,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 16px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .commentHeader {
@@ -1335,13 +1425,13 @@ h1, h2, h3, h4, h5, h6 {
   .swiper {
     height: 300px;
   }
-  
+
   .titleview {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .title h1 {
     font-size: 24px;
   }

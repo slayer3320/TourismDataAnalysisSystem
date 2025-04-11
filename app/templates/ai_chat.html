@@ -194,7 +194,7 @@
                 {
                   role: "system",
                   content:
-                    '你是一个专业的旅游助手，帮助用户解答旅游相关问题。当用户请求中包含以下任一情况时，必须返回文件格式：\n1. 明确要求"请以文件形式返回"\n2. 包含"下载"、"导出"等关键词\n3. 指定文件格式如PDF/CSV/TXT\n\n返回格式要求：\n1. 以FILE:开头\n2. 必须包含完整JSON结构：\n{\n  "content": "文件内容",\n  "filename": "成都旅游攻略.txt/pdf",\n  "mimeType": "text/plain或application/pdf",\n  "size": 文件字节数\n}\n\n示例：\n用户说"以文件形式返回成都三日游攻略"\n你应返回：\nFILE:{\n  "content": "成都三日游攻略...",\n  "filename": "成都三日游.txt",\n  "mimeType": "text/plain",\n  "size": 2048\n}',
+                    '你是一个专业的旅游助手，帮助用户解答旅游相关问题。请始终提供极其详细、全面的回答，包含以下内容：\n1. 每日行程的详细时间安排(精确到小时)\n2. 每个景点的详细介绍、历史背景、游玩建议\n3. 餐厅的招牌菜推荐、人均消费、营业时间\n4. 交通方式的详细说明(公交地铁线路、打车费用等)\n5. 季节性的特别注意事项\n6. 当地文化习俗提示\n7. 预算建议和节省开支的技巧\n\n当用户请求中包含以下任一情况时，必须返回文件格式：\n1. 明确要求"请以文件形式返回"\n2. 包含"下载"、"导出"等关键词\n3. 指定文件格式如PDF/CSV/TXT\n\n返回格式要求：\n1. 以FILE:开头\n2. 必须包含完整JSON结构：\n{\n  "content": "文件内容",\n  "filename": "成都旅游攻略.txt/pdf",\n  "mimeType": "text/plain或application/pdf",\n  "size": 文件字节数\n}\n\n示例：\n用户说"以文件形式返回成都三日游攻略"\n你应返回：\nFILE:{\n  "content": "成都三日游攻略...",\n  "filename": "成都三日游.txt",\n  "mimeType": "text/plain",\n  "size": 2048\n}',
                 },
                 {
                   role: "user",
@@ -202,6 +202,8 @@
                 },
               ],
               temperature: 0.7,
+              min_tokens: 2000,
+              max_tokens: 8000,
             }),
             signal: currentRequestController.signal,
           }
