@@ -149,7 +149,7 @@ def cityChar(request):
     username = request.session.get('username')
     userInfo = User.objects.get(username=username)
     year, mon, day = getHomeData.getNowTime()
-    Xdata,Ydata = getEchartsData.cityCharDataOne()
+    cities, counts = getEchartsData.cityCharDataOne()
     resultData = getEchartsData.cityCharDataTwo()
     return render(request, 'cityChar.html', {
         'userInfo': userInfo,
@@ -158,11 +158,11 @@ def cityChar(request):
             'mon': getPublicData.monthList[mon - 1],
             'day': day
         },
-        'cityCharOneData':{
-            'Xdata':Xdata,
-            'Ydata':Ydata
+        'city_data': {
+            'cities': cities,
+            'counts': counts
         },
-        'cityCharTwoData':resultData
+        'cityCharTwoData': resultData
     })
 
 def rateChar(request):

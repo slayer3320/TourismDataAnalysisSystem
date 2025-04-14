@@ -3,14 +3,32 @@ import datetime
 travelInfoList = getPublicData.getAllTravelInfoMapData()
 
 def cityCharDataOne():
-    cityDic = {}
-    for travel in travelInfoList:
-        if cityDic.get(travel.province,-1) == -1:
-            cityDic[travel.province] = 1
-        else:
-            cityDic[travel.province] += 1
-
-    return list(cityDic.keys()),list(cityDic.values())
+    import csv
+    from pathlib import Path
+    
+    # Read data from city_sights_counts_5A_4A.csv
+    csv_path = Path(__file__).parent / 'city_sights_counts_5A_4A.csv'
+    city_data = []
+    
+    with open(csv_path, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            city_data.append({
+                'city': row['city'],
+                'count': int(row['sights_count_5A_4A'])
+            })
+    
+    # Sort by count in descending order first
+    city_data.sort(key=lambda x: x['count'], reverse=True)
+    
+    # Then sort by city name pinyin first letter
+    from pypinyin import lazy_pinyin
+    city_data.sort(key=lambda x: lazy_pinyin(x['city'])[0][0])
+    
+    # Extract top 100 cities for better visualization
+    top_cities = city_data[:100]
+    
+    return [x['city'] for x in top_cities], [x['count'] for x in top_cities]
 
 def cityCharDataTwo():
     cityDic = {}
@@ -152,4 +170,3 @@ def getCommentsCharDataThree():
                 yData[x - 1] += 1
                 break
     return xData, yData
-

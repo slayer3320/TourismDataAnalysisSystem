@@ -49,23 +49,22 @@ def getNowTime():
     return year,mon,day
 
 def getGeoData():
-    provinceAttractions = {}  # {province: set(attraction_names)}
+    import csv
+    from pathlib import Path
     
-    # Collect all unique attraction names per province
-    for travel in travelMapData:
-        if travel.province not in provinceAttractions:
-            provinceAttractions[travel.province] = set()
-        provinceAttractions[travel.province].add(travel.title)
+    # Read data from province_sights_counts.csv
+    csv_path = Path(__file__).parent / 'province_sights_counts.csv'
+    geo_data = []
     
-    # Count attractions per province
-    dataDic = {}
-    for province, attractions in provinceAttractions.items():
-        # Directly use the province name from travel data
-        if province not in dataDic:
-            dataDic[province] = 0
-        dataDic[province] += len(attractions)
-
-    return [{'name': province, 'value': count} for province, count in dataDic.items()]
+    with open(csv_path, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            geo_data.append({
+                'name': row['province'],
+                'value': int(row['sights_count'])
+            })
+    
+    return geo_data
 
 def getUserCreateTimeData():
     dataDic = {}
