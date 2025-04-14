@@ -5,49 +5,63 @@ from pypinyin import pinyin, Style
 
 monthList = ['January','February','March','April','May','June','July','August','Suptember','October','November','December']
 
+from .fetchCityJson import fetch_cities_from_mysql
+
+# 初始化时从MySQL获取城市数据
 cityList = []
-with open(os.path.join(os.path.dirname(__file__), 'city.json'), 'r', encoding='utf-8') as f:
-    data = json.load(f)
-    for province in data['city']:
-        cities = [{'name': city['name'], 'url': city['url']} for city in province['city']]
-        cityList.append({'province': province['name'], 'city': cities})
+try:
+    from .fetchCityJson import get_city_data
+    data = get_city_data()
+    if data:
+        # 转换新格式数据为旧格式兼容结构
+        provinces = {}
+        for city, province in data.items():
+            if province not in provinces:
+                provinces[province] = []
+            provinces[province].append({'name': city, 'url': ''})
+        
+        cityList = [{'province': p, 'city': c} for p, c in provinces.items()]
+except Exception as e:
+    print(f"初始化城市数据失败: {str(e)}")
+    cityList = []
 
 def getProvinceList():
     """获取省份列表并按拼音排序"""
     try:
-        file_path = os.path.join(os.path.dirname(__file__), 'city.json')
-        print(f"尝试读取文件: {file_path}")  # 调试信息
-        
-        if not os.path.exists(file_path):
-            print("city.json文件不存在")
+        from .fetchCityJson import get_city_data
+        data = get_city_data()
+        if not data:
             return []
             
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            province_list = [province['name'] for province in data['city']]
-            province_list.sort(key=lambda x: pinyin(x, style=Style.FIRST_LETTER)[0][0].lower())
-            return province_list
+        # 从数据获取不重复的省份列表
+        province_list = list(set(data.values()))
+        province_list.sort(key=lambda x: pinyin(x, style=Style.FIRST_LETTER)[0][0].lower())
+        return province_list
     except Exception as e:
         print(f"获取省份列表出错: {str(e)}")
         return []
 
 def getCityList(province_name=None):
     """获取城市列表，可按省份筛选并按拼音排序"""
-    with open(os.path.join(os.path.dirname(__file__), 'city.json'), 'r', encoding='utf-8') as f:
-        data = json.load(f)
+    try:
+        from .fetchCityJson import get_city_data
+        data = get_city_data()
+        if not data:
+            return []
+            
         if province_name:
             # 获取指定省份的城市
-            for province in data['city']:
-                if province['name'] == province_name:
-                    city_list = [city['name'] for city in province['city']]
-                    city_list.sort(key=lambda x: pinyin(x, style=Style.FIRST_LETTER)[0][0].lower())
-                    return city_list
-            return []
-        else:
-            # 获取所有城市
-            city_list = [city['name'] for province in data['city'] for city in province['city']]
+            city_list = [city for city, province in data.items() if province == province_name]
             city_list.sort(key=lambda x: pinyin(x, style=Style.FIRST_LETTER)[0][0].lower())
             return city_list
+        else:
+            # 获取所有城市
+            city_list = list(data.keys())
+            city_list.sort(key=lambda x: pinyin(x, style=Style.FIRST_LETTER)[0][0].lower())
+            return city_list
+    except Exception as e:
+        print(f"获取城市列表出错: {str(e)}")
+        return []
 
 def getAllTravelInfoMapData(province=None):
     def map_fn(item):

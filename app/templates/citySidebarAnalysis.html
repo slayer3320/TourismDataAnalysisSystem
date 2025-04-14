@@ -32,8 +32,19 @@
         <div class="card-body">
           <h5 class="card-title">城市选择</h5>
           <div class="alert alert-info mb-3" id="citySelectionAlert">
-            当前选择: <span id="currentProvince">{{ provinceList.0 }}</span> - <span id="currentCity">{{ selectedCity }}</span>
+            当前选择: <span id="currentProvince">{% if provinceList %}{{ provinceList.0 }}{% else %}{% endif %}</span> - <span id="currentCity">{{ selectedCity }}</span>
           </div>
+          <script>
+            // 初始化时设置当前省份和城市
+            document.addEventListener('DOMContentLoaded', function() {
+              const provinceSelect = document.getElementById('provinceSelect');
+              const citySelect = document.getElementById('citySelect');
+              
+              // 更新提示框显示
+              document.getElementById('currentProvince').textContent = provinceSelect.value;
+              document.getElementById('currentCity').textContent = citySelect.value;
+            });
+          </script>
           <div class="row mb-3">
             <div class="col-sm-12">
               <div class="row align-items-center mb-3">
@@ -272,18 +283,10 @@
   };
   commentCloudChart.setOption(commentCloudOption);
 
-  // 城市选择变化时更新词云
+  // 城市选择变化时直接跳转
   $('#citySelect').change(function() {
     var city = $(this).val();
-    $.ajax({
-      url: window.location.pathname,
-      data: {city: city},
-      success: function(data) {
-        var newDoc = document.open("text/html", "replace");
-        newDoc.write(data);
-        newDoc.close();
-      }
-    });
+    window.location.href = window.location.pathname + '?city=' + encodeURIComponent(city);
   });
 </script>
 {% endblock %}
@@ -294,16 +297,8 @@
   // 城市选择变化事件
   $('#citySelect').change(function() {
     var city = $(this).val();
-    $.ajax({
-      url: window.location.pathname,
-      data: {city: city},
-      success: function(data) {
-        // 更新页面内容
-        var newDoc = document.open("text/html", "replace");
-        newDoc.write(data);
-        newDoc.close();
-      }
-    });
+    // 立即更新URL和页面内容
+    window.location.href = window.location.pathname + '?city=' + encodeURIComponent(city);
   });
 
   // 星级占比图表
