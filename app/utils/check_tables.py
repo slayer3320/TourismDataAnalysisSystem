@@ -90,13 +90,35 @@ def get_price_analysis(city_name):
         connection.close()
         
 # 获取景点列表
-def get_scenic_spots_list():
+def get_scenic_spots_list(city_name):
     connection = connect_to_database()
-    if connection:
-        cursor = connection.cursor()
-        query = "SELECT id, name, grade, score, ticket_price, comments, url FROM scenic_spots"
-        cursor.execute(query)
+    if not connection:
+        return []  # 如果连接失败，直接返回空列表
+    
+    cursor = connection.cursor()
+    
+    try:
+        # 1. 先从city表获取city_id
+        cursor.execute("SELECT id FROM city WHERE city_name = %s", (city_name,))
+        city_result = cursor.fetchone()
+        
+        if not city_result:
+            return []  # 如果城市不存在，返回空列表
+        
+        city_id = city_result[0]
+        
+        # 2. 查询景点列表
+        query = """
+            SELECT id, name, grade, score, ticket_price, comments, url 
+            FROM scenic_spots 
+            WHERE city_id = %s
+        """
+        cursor.execute(query, (city_id,))
         result = cursor.fetchall()
+        
+        return result
+    
+    finally:
+        # 确保无论如何都会关闭连接
         cursor.close()
         connection.close()
-        return result

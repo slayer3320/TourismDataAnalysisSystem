@@ -350,10 +350,14 @@ def citySidebarAnalysis(request):
     # 获取选定城市的景点数据
     from app.utils.fetch_data import fetch_scenic_spots_by_city
 
-    # 获取选定城市的景点列表
-    travelList = fetch_scenic_spots_by_city(selectedCity)
-    travelList = [{'id': travel[0], 'name': travel[1], 'grade': travel[2], 'score': travel[3], 'ticket_price': travel[4], 'comments': travel[5], 'url': travel[6]} for travel in travelList]
-    # 这里需要确保使用正确的索引来访问元组中的数据
+    # 获取选定城市的景点列表(只包含景区名、等级、评分和价格)
+    travelList = check_tables.get_scenic_spots_list(selectedCity)
+    travelList = [{
+        'name': travel[1], 
+        'grade': travel[2], 
+        'score': travel[3], 
+        'ticket_price': travel[4]
+    } for travel in travelList]
     
     # 获取星级占比数据
     starRatioData = check_tables.get_star_ratio(selectedCity)

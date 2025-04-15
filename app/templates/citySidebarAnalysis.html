@@ -202,7 +202,7 @@
         <div class="card-body">
           <h5 class="card-title">{{ selectedCity }} 景点列表</h5>
 
-          <table class="table table-borderless datatable">
+              <table class="table table-borderless datatable">
             <thead>
               <tr>
                 <th style="width:100px" scope="col">#</th>
@@ -210,24 +210,16 @@
                 <th style="width:100px" scope="col">景区等级</th>
                 <th style="width:100px" scope="col">景区评分</th>
                 <th style="width:100px" scope="col">价格</th>
-                <th style="width:100px" scope="col">月销量</th>
-                <th scope="col" style="text-align:center;width:100px">图片</th>
               </tr>
             </thead>
             <tbody>
               {% for i in travelList %}
                 <tr onclick="window.location.href='/app/travelDetail/{{ i.id }}/'" style="cursor:pointer">
                   <th scope="row"><a href="#">#{{ i.id }}</a></th>
-                  <td>{{ i.title }}</td>
-                  <td><a href="#" class="text-primary">{{ i.level }}</a></td>
+                  <td>{{ i.name }}</td>
+                  <td><a href="#" class="text-primary">{% if i.grade %}{{ i.grade }}{% else %}无评级{% endif %}</a></td>
                   <td><span class="badge bg-success">{{ i.score }}分</span></td>
-                  <td><span class="text-danger">${{ i.price }}</span></td>
-                  <td><span class="text-primary">{{ i.saleCount }}</span></td>
-                  <td>
-                    <a href="{{ i.detailUrl }}">
-                      <img style="width:100%" src="{{ i.cover }}" alt="">
-                    </a>
-                  </td>
+                  <td><span class="text-danger">${{ i.ticket_price }}</span></td>
                 </tr>
               {% endfor %}
             </tbody>
