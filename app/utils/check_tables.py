@@ -54,6 +54,67 @@ def get_star_ratio(city_name):
         cursor.close()
         connection.close()
 
+
+def get_city_reviews(city_name):
+    """获取城市所有景点的评论
+    Args:
+        city_name: 城市名称
+    Returns:
+        列表，每个元素包含景点信息和评论
+    """
+    connection = connect_to_database()
+    if not connection:
+        return []  # 如果连接失败，直接返回空列表
+    
+    cursor = connection.cursor(dictionary=True)  # 使用字典游标方便获取列名
+    
+    try:
+        # 1. 先从city表获取city_id
+        cursor.execute("SELECT id FROM city WHERE city_name = %s", (city_name,))
+        city_result = cursor.fetchone()
+        
+        if not city_result:
+            return []  # 如果城市不存在，返回空列表
+        
+        city_id = city_result['id']
+        
+        # 2. 查询该城市所有景点的评论
+        query = """
+            SELECT 
+                s.id as spot_id, 
+                s.name as spot_name,
+                r.review_id,
+                r.content
+            FROM scenic_spots s
+            JOIN reviews r ON s.id = r.scenic_id
+            WHERE s.city_id = %s
+            ORDER BY s.id, r.time DESC
+        """
+        cursor.execute(query, (city_id,))
+        result = cursor.fetchall()
+        
+        # 按景点分组评论
+        reviews_by_spot = {}
+        for row in result:
+            spot_id = row['spot_id']
+            if spot_id not in reviews_by_spot:
+                reviews_by_spot[spot_id] = {
+                    'spot_id': spot_id,
+                    'spot_name': row['spot_name'],
+                    'reviews': []
+                }
+            reviews_by_spot[spot_id]['reviews'].append({
+                'review_id': row['review_id'],
+                'content': row['content'],
+            })
+        
+        return list(reviews_by_spot.values())
+    
+    finally:
+        # 确保无论如何都会关闭连接
+        cursor.close()
+        connection.close()
+
 def get_scenic_spots_list_by_id(spot_id):
     connection = connect_to_database()
     if not connection:

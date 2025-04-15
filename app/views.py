@@ -416,8 +416,38 @@ def citySidebarAnalysis(request):
                 }
             })
 
-    # 评论词云数据暂时为空
+    # 获取评论词云数据
+    city_reviews = check_tables.get_city_reviews(selectedCity)
     commentCloudData = []
+    if city_reviews:
+        # 收集所有评论内容
+        all_comments = []
+        for spot in city_reviews:
+            for review in spot['reviews']:
+                all_comments.append(review['content'])
+        
+        # 加载自定义词典和停用词
+        jieba.load_userdict('app/utils/tourism_dict.txt')  # 旅游领域词典
+        stopwords = set()
+        with open('app/utils/stopwords.txt', 'r', encoding='utf-8') as f:
+            for line in f:
+                stopwords.add(line.strip())
+        
+        # 使用精确模式分词并进行过滤
+        word_counts = {}
+        for comment in all_comments:
+            words = jieba.lcut(comment, cut_all=False)  # 精确模式
+            for word in words:
+                # 过滤条件：长度>1、纯汉字、不在停用词中、不是标点符号
+                if (len(word) > 1 and 
+                    all('\u4e00' <= uc <= '\u9fff' for uc in word) and
+                    word not in stopwords and 
+                    not word.isspace() and
+                    not all(uc in ('，','。','！','？','、','；','：','"',"'",'（','）','【','】','《','》') for uc in word)):
+                    word_counts[word] = word_counts.get(word, 0) + 1
+        
+        # 转换为词云需要的格式
+        commentCloudData = [{'name': k, 'value': v} for k, v in word_counts.items()]
     
     # 调试信息
     print(f"景点数量: {len(travelList)}")
