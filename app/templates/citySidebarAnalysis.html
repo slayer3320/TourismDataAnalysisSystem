@@ -32,17 +32,49 @@
         <div class="card-body">
           <h5 class="card-title">城市选择</h5>
           <div class="alert alert-info mb-3" id="citySelectionAlert">
-            当前选择: <span id="currentProvince">{% if provinceList %}{{ provinceList.0 }}{% else %}{% endif %}</span> - <span id="currentCity">{{ selectedCity }}</span>
+            当前选择: <span id="currentProvince">{% if provinceList %}{{ provinceList.0 }}{% else %}{% endif %}</span> <span id="currentCity">{{ selectedCity }}</span>
           </div>
           <script>
-            // 初始化时设置当前省份和城市
+            // 初始化时从localStorage加载保存的选择或使用默认值
             document.addEventListener('DOMContentLoaded', function() {
               const provinceSelect = document.getElementById('provinceSelect');
               const citySelect = document.getElementById('citySelect');
               
-              // 更新提示框显示
-              document.getElementById('currentProvince').textContent = provinceSelect.value;
-              document.getElementById('currentCity').textContent = citySelect.value;
+              // 从localStorage获取保存的选择
+              const savedProvince = localStorage.getItem('selectedProvince');
+              const savedCity = localStorage.getItem('selectedCity');
+              
+              if (savedProvince && savedCity) {
+                // 设置省份选择
+                provinceSelect.value = savedProvince;
+                document.getElementById('currentProvince').textContent = savedProvince;
+                
+                // 获取该省份下的城市列表
+                fetch(`/app/get_cities?province=${encodeURIComponent(savedProvince)}`)
+                  .then(response => response.json())
+                  .then(cities => {
+                    citySelect.innerHTML = '';
+                    cities.forEach(city => {
+                      const option = document.createElement('option');
+                      option.value = city;
+                      option.textContent = city;
+                      citySelect.appendChild(option);
+                    });
+                    
+                    // 设置城市选择
+                    if (cities.includes(savedCity)) {
+                      citySelect.value = savedCity;
+                      document.getElementById('currentCity').textContent = savedCity;
+                    } else {
+                      citySelect.value = cities[0];
+                      document.getElementById('currentCity').textContent = cities[0];
+                    }
+                  });
+              } else {
+                // 使用默认值
+                document.getElementById('currentProvince').textContent = provinceSelect.value;
+                document.getElementById('currentCity').textContent = citySelect.value;
+              }
             });
           </script>
           <div class="row mb-3">
@@ -62,51 +94,37 @@
                   <div class="input-group mb-3">
                     <span class="input-group-text">城市/风景区</span>
                     <select id="citySelect" name="city" class="form-select">
-                {% for city in cityList %}
-                  <option value="{{ city }}" {% if city == selectedCity or not selectedCity and city == '澳门' %}selected{% endif %}>{{ city }}</option>
-                {% endfor %}
-              </select>
-
-              <script>
-              document.getElementById('provinceSelect').addEventListener('change', function() {
-                  const province = this.value;
-                  document.getElementById('currentProvince').textContent = province;
-                  fetch(`/app/get_cities?province=${encodeURIComponent(province)}`)
-                      .then(response => response.json())
-                      .then(cities => {
-                          const citySelect = document.getElementById('citySelect');
-                          citySelect.innerHTML = '';
-                          cities.forEach(city => {
-                              const option = document.createElement('option');
-                              option.value = city;
-                              option.textContent = city;
-                              citySelect.appendChild(option);
-                          });
-                          // 更新当前城市显示
-                          document.getElementById('currentCity').textContent = cities[0];
-                      });
-              });
-
+                      {% for city in cityList %}
+                        <option value="{{ city }}" {% if city == selectedCity or not selectedCity and city == '澳门' %}selected{% endif %}>{{ city }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </div>
               
-
-              document.getElementById('provinceSelect').addEventListener('change', function() {
+              <script>
+                document.getElementById('provinceSelect').addEventListener('change', function() {
                   const province = this.value;
                   document.getElementById('currentProvince').textContent = province;
                   fetch(`/app/get_cities?province=${encodeURIComponent(province)}`)
-                      .then(response => response.json())
-                      .then(cities => {
-                          const citySelect = document.getElementById('citySelect');
-                          citySelect.innerHTML = '';
-                          cities.forEach(city => {
-                              const option = document.createElement('option');
-                              option.value = city;
-                              option.textContent = city;
-                              citySelect.appendChild(option);
-                          });
-                          // 更新当前城市显示但不触发页面加载
-                          document.getElementById('currentCity').textContent = cities[0];
+                    .then(response => response.json())
+                    .then(cities => {
+                      const citySelect = document.getElementById('citySelect');
+                      citySelect.innerHTML = '';
+                      cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        option.textContent = city;
+                        citySelect.appendChild(option);
                       });
-              });
+                      // 更新当前城市显示
+                      document.getElementById('currentCity').textContent = cities[0];
+                    });
+                });
+                
+                document.getElementById('citySelect').addEventListener('change', function() {
+                  document.getElementById('currentCity').textContent = this.value;
+                });
               </script>
             </div>
           </div>
@@ -118,13 +136,22 @@
         </div>
       </div>
     </div>
+    
     <script>
       document.getElementById('confirmCityBtn').addEventListener('click', function() {
+        const province = document.getElementById('provinceSelect').value;
         const city = document.getElementById('citySelect').value;
+        
+        // 保存选择到localStorage
+        localStorage.setItem('selectedProvince', province);
+        localStorage.setItem('selectedCity', city);
+        
+        // 跳转到相应页面
         window.location.href = `/app/citySidebarAnalysis?city=${encodeURIComponent(city)}`;
       });
     </script>
   </div>
+
 
   <div class="row">
     <!-- 星级占比图表 -->
