@@ -195,6 +195,8 @@
     </div>
   </div>
 
+
+  
   <!-- 景点列表 -->
   <div class="row">
     <div class="col-12">
@@ -239,100 +241,94 @@
 
 {% block extra_js %}
 <script>
-  // 初始化词云图
-  var wordCloudChart = echarts.init(document.getElementById('wordCloudChart'));
-  
-  // 词云图配置
-  var wordCloudOption = {
-    title: {
-      text: '景点名称词云',
-      left: 'center'
-    },
-    tooltip: {
-      show: true
-    },
-    series: [{
-      type: 'wordCloud',
-      shape: 'circle',
-      left: 'center',
-      top: 'center',
-      width: '90%',
-      height: '90%',
-      right: null,
-      bottom: null,
-      sizeRange: [12, 60],
-      rotationRange: [-90, 90],
-      rotationStep: 45,
-      gridSize: 8,
-      drawOutOfBound: false,
-      textStyle: {
-        fontFamily: 'sans-serif',
-        fontWeight: 'bold',
-        color: function () {
-          return 'rgb(' + 
-            Math.round(Math.random() * 255) + ',' + 
-            Math.round(Math.random() * 255) + ',' + 
-            Math.round(Math.random() * 255) + ')';
+(function() {
+    // 等待所有资源加载完成
+    function initWordClouds() {
+        // 景点词云
+        try {
+            const wordCloudChart = echarts.init(document.getElementById('wordCloudChart'));
+            const wordCloudOption = {
+                title: {
+                    text: '景点词云 - 大小表示综合热度',
+                    left: 'center'
+                },
+                tooltip: {
+                    show: true,
+                    formatter: function(params) {
+                        return params.name + ': ' + params.value.toFixed(1);
+                    }
+                },
+                series: [{
+                    type: 'wordCloud',
+                    shape: 'circle',
+                    left: 'center',
+                    top: 'center',
+                    width: '90%',
+                    height: '90%',
+                    sizeRange: [20, 80],
+                    rotationRange: [-45, 45],
+                    rotationStep: 15,
+                    gridSize: 10,
+                    drawOutOfBound: false,
+                    textStyle: {
+                        fontFamily: 'Microsoft YaHei',
+                        fontWeight: 'bold',
+                        color: function () {
+                            return 'rgb(' + 
+                                Math.round(Math.random() * 155 + 100) + ',' + 
+                                Math.round(Math.random() * 155 + 100) + ',' + 
+                                Math.round(Math.random() * 155 + 100) + ')';
+                        }
+                    },
+                    emphasis: {
+                        textStyle: {
+                            shadowBlur: 10,
+                            shadowColor: '#333'
+                        }
+                    },
+                    data: {{ wordCloudData|safe }}
+                }]
+            };
+            
+            console.log('词云数据:', {{ wordCloudData|safe }});
+            
+            wordCloudChart.setOption(wordCloudOption);
+            
+            // 窗口大小变化时重绘
+            window.addEventListener('resize', function() {
+                wordCloudChart.resize();
+            });
+        } catch (error) {
+            console.error('景点词云初始化失败:', error);
         }
-      },
-      emphasis: {
-        textStyle: {
-          shadowBlur: 10,
-          shadowColor: '#333'
-        }
-      },
-      data: {{ wordCloudData|safe }}
-    }]
-  };
-  wordCloudChart.setOption(wordCloudOption);
 
-  // 初始化评论词云图
-  var commentCloudChart = echarts.init(document.getElementById('commentCloudChart'));
-  
-  // 评论词云图配置
-  var commentCloudOption = {
-    title: {
-      text: '游客评价词云',
-      left: 'center'
-    },
-    tooltip: {
-      show: true
-    },
-    series: [{
-      type: 'wordCloud',
-      shape: 'circle',
-      left: 'center',
-      top: 'center',
-      width: '90%',
-      height: '90%',
-      right: null,
-      bottom: null,
-      sizeRange: [12, 60],
-      rotationRange: [-90, 90],
-      rotationStep: 45,
-      gridSize: 8,
-      drawOutOfBound: false,
-      textStyle: {
-        fontFamily: 'sans-serif',
-        fontWeight: 'bold',
-        color: function () {
-          return 'rgb(' + 
-            Math.round(Math.random() * 255) + ',' + 
-            Math.round(Math.random() * 255) + ',' + 
-            Math.round(Math.random() * 255) + ')';
+        // 评论词云初始化
+        try {
+            const commentCloudChart = echarts.init(document.getElementById('commentCloudChart'));
+            const commentCloudOption = {
+                title: {
+                    text: '游客评价词云',
+                    left: 'center'
+                },
+                series: [{
+                    type: 'wordCloud',
+                    data: {{ commentCloudData|safe }}
+                }]
+            };
+            commentCloudChart.setOption(commentCloudOption);
+        } catch (error) {
+            console.error('评论词云初始化失败:', error);
         }
-      },
-      emphasis: {
-        textStyle: {
-          shadowBlur: 10,
-          shadowColor: '#333'
-        }
-      },
-      data: {{ commentCloudData|safe }}
-    }]
-  };
-  commentCloudChart.setOption(commentCloudOption);
+    }
 
+    // 多种方式确保执行
+    if (document.readyState === 'complete') {
+        initWordClouds();
+    } else {
+        window.addEventListener('load', initWordClouds);
+        document.addEventListener('DOMContentLoaded', initWordClouds);
+    }
+})();
 </script>
 {% endblock %}
 
@@ -370,7 +366,6 @@
     ]
   };
   starRatioChart.setOption(starRatioOption);
-
   // 价格分析图表
   var priceAnalysisChart = echarts.init(document.getElementById('priceAnalysisChart'));
   var priceAnalysisOption = {

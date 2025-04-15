@@ -374,10 +374,58 @@ def citySidebarAnalysis(request):
     priceAnalysisXData = [str(price) for price, _ in priceAnalysisData]
     priceAnalysisYData = [count for _, count in priceAnalysisData]
     
-    # 保留一个占位符以避免报错
+    # 生成景点词云数据
     wordCloudData = []
-    commentCloudData = []
+    if travelList:
+        # 计算各指标的最大值用于标准化
+        max_heat = max(travel['heat'] for travel in travelList if travel['heat']) or 1
+        max_comments = max(travel['comments'] for travel in travelList if travel['comments']) or 1
+        max_score = 5  # 评分最大为5分
+        
+        for travel in travelList:
+            # 计算综合评分
+            grade_weight = 0
+            if travel['grade'] == '5A':
+                grade_weight = 1.0
+            elif travel['grade'] == '4A':
+                grade_weight = 0.7
+            else:
+                grade_weight = 0.3
+                
+            # 标准化处理各指标
+            normalized_heat = (travel['heat'] or 0) / max_heat
+            normalized_comments = (travel['comments'] or 0) / max_comments
+            normalized_score = (travel['score'] or 0) / max_score
+            
+            # 综合评分 = 热度*0.4 + 评论数*0.3 + 评分*0.2 + 等级*0.1
+            composite_score = (
+                normalized_heat * 0.4 + 
+                normalized_comments * 0.3 + 
+                normalized_score * 0.2 + 
+                grade_weight * 0.1
+            ) * 100
+            
+            # 确保评分在10-100范围内
+            composite_score = max(10, min(100, composite_score))
+            
+            wordCloudData.append({
+                'name': travel['name'],
+                'value': composite_score,
+                'itemStyle': {
+                    'color': f'rgb({int(255 * (1 - composite_score/100))}, {int(255 * (composite_score/100))}, 150)'
+                }
+            })
 
+    # 评论词云数据暂时为空
+    commentCloudData = []
+    
+    # 调试信息
+    print(f"景点数量: {len(travelList)}")
+    print(f"词云数据数量: {len(wordCloudData)}")
+    if wordCloudData:
+        print(f"示例词云数据: {wordCloudData[0]}")
+
+    print(f"词云数据: {wordCloudData}")  # 添加调试信息
     return render(request, 'citySidebarAnalysis.html', {
         'userInfo': userInfo,
         'nowTime': {

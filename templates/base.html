@@ -344,7 +344,8 @@
   </footer>
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-  <script src="/static/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts-wordcloud@2.1.0/dist/echarts-wordcloud.min.js"></script>
   <script src="/static/china.js"></script>
   {% block echarts %}
   <script>
@@ -506,3 +507,5 @@
 </body>
 
 </html>
+
+{% block extra_js %}{% endblock %}
