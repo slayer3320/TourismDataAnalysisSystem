@@ -356,7 +356,8 @@ def citySidebarAnalysis(request):
         'name': travel[1], 
         'grade': travel[2], 
         'score': travel[3], 
-        'ticket_price': travel[4]
+        'ticket_price': travel[4],
+        'image_url': travel[5],
     } for travel in travelList]
     
     # 获取星级占比数据

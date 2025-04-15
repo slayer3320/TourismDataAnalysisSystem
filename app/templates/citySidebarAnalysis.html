@@ -205,7 +205,7 @@
               <table class="table table-borderless datatable">
             <thead>
               <tr>
-                <th style="width:100px" scope="col">#</th>
+                <th style="width:100px" scope="col">图片</th>
                 <th scope="col">景区名</th>
                 <th style="width:100px" scope="col">景区等级</th>
                 <th style="width:100px" scope="col">景区评分</th>
@@ -215,7 +215,13 @@
             <tbody>
               {% for i in travelList %}
                 <tr onclick="window.location.href='/app/travelDetail/{{ i.id }}/'" style="cursor:pointer">
-                  <th scope="row"><a href="#">#{{ i.id }}</a></th>
+                  <th scope="row">
+                    {% if i.image_url %}
+                      <img src="{{ i.image_url }}" style="width:80px;height:60px;object-fit:cover" alt="{{ i.name }}">
+                    {% else %}
+                      <span>无图片</span>
+                    {% endif %}
+                  </th>
                   <td>{{ i.name }}</td>
                   <td><a href="#" class="text-primary">{% if i.grade %}{{ i.grade }}{% else %}无评级{% endif %}</a></td>
                   <td><span class="badge bg-success">{{ i.score }}分</span></td>
