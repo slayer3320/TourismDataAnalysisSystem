@@ -6,7 +6,6 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from app.models import User,TravelInfo
 from django.http import HttpResponse
-from app.recommdation import getUser_ratings,user_bases_collaborative_filtering
 from app.utils import errorResponse,getHomeData,getPublicData,getChangeSelfInfoData,getAddCommentsData,getEchartsData,getRecommendationData,check_tables
 
 def login(request):
@@ -248,7 +247,8 @@ def recommendation(request):
     year, mon, day = getHomeData.getNowTime()
     
     # 获取筛选参数
-    region = request.GET.get('region') or request.POST.get('region')
+    province = request.GET.get('province') or request.POST.get('province')
+    city = request.GET.get('city') or request.POST.get('city')
     min_price = request.GET.get('min_price') or request.POST.get('min_price')
     max_price = request.GET.get('max_price') or request.POST.get('max_price')
     score = request.GET.get('score') or request.POST.get('score')
@@ -260,30 +260,8 @@ def recommendation(request):
     except (ValueError, TypeError):
         min_price = max_price = None
     
-    try:
-        user_ratings = getUser_ratings()
-        recommended_items = user_bases_collaborative_filtering(userInfo.id, user_ratings)
-        resultDataList = getRecommendationData.getAllTravelByTitle(
-            recommended_items,
-            region=region,
-            min_price=min_price,
-            max_price=max_price,
-            score=score,
-            level=level
-        )
-    except:
-        resultDataList = getRecommendationData.getRandomTravel(
-            region=region,
-            min_price=min_price,
-            max_price=max_price,
-            score=score,
-            level=level
-            # types=types
-        )
-
-    # 获取地区列表用于下拉框
     provinceList = getPublicData.getProvinceList()
-    cityList = getPublicData.getCityList()
+    cityList = getPublicData.getCityList(provinceList[0]) if provinceList else []
 
     return render(request, 'recommendation.html', {
         'userInfo': userInfo,
@@ -292,15 +270,16 @@ def recommendation(request):
             'mon': getPublicData.monthList[mon - 1],
             'day': day
         },
-        'resultDataList': resultDataList,
         'cityList': cityList,
         'filter_params': {
-            'region': region,
+            'province': province,
+            'city': city,
             'min_price': min_price,
             'max_price': max_price,
             'score': score,
             'level': level
-        }
+        },
+        'provinceList': provinceList
     })
 
 def detailIntroCloud(request):
@@ -565,8 +544,8 @@ def ai_chat_api(request):
 
 def get_cities(request):
     province = request.GET.get('province')
-    city_list = getPublicData.getCityList(province)
-    return JsonResponse(city_list, safe=False)
+    city_names = getPublicData.getCityList(province)
+    city_list = [{'name': name} for name in city_names]
 
 def debug_province_list(request):
     province_list = getPublicData.getProvinceList()

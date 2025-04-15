@@ -38,22 +38,30 @@
               <h6 class="filter-group-title">基本条件</h6>
               <div class="row g-3">
                 <div class="col-md-4">
-                  <label for="region" class="form-label">地区</label>
+                  <label for="region" class="form-label">省份</label>
                   <select id="region" name="region" class="form-select">
-                    <option value="">全部地区</option>
-                    {% for city in cityList %}
-                    <option value="{{ city }}" {% if filter_params.region == city %}selected{% endif %}>{{ city }}</option>
+                    {% for province in provinceList %}
+                    <option value="{{ province }}">{{ province }}</option>
                     {% endfor %}
                   </select>
                 </div>
                 
                 <div class="col-md-4">
+                  <label for="region" class="form-label">城市</label>
+                  <select id="region" name="region" class="form-select">
+                    {% for city in cityList %}
+                    <option value="{{ city }}">{{ city }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-md-4">
                   <label for="score" class="form-label">最低评分</label>
                   <select id="score" name="score" class="form-select">
                     <option value="">全部评分</option>
-                    <option value="3" {% if filter_params.score == "3" %}selected{% endif %}>3分及以上</option>
-                    <option value="4" {% if filter_params.score == "4" %}selected{% endif %}>4分及以上</option>
-                    <option value="4.5" {% if filter_params.score == "4.5" %}selected{% endif %}>4.5分及以上</option>
+                    <option value="3">3分及以上</option>
+                    <option value="4">4分及以上</option>
+                    <option value="4.5">4.5分及以上</option>
                   </select>
                 </div>
                 
@@ -61,9 +69,9 @@
                   <label for="level" class="form-label">景点等级</label>
                   <select id="level" name="level" class="form-select">
                     <option value="">全部等级</option>
-                    <option value="5A" {% if filter_params.level == "5A" %}selected{% endif %}>5A级</option>
-                    <option value="4A" {% if filter_params.level == "4A" %}selected{% endif %}>4A级</option>
-                    <option value="3A" {% if filter_params.level == "3A" %}selected{% endif %}>3A级</option>
+                    <option value="5A">5A级</option>
+                    <option value="4A">4A级</option>
+                    <option value="3A">3A级</option>
                   </select>
                 </div>
               </div>
@@ -76,13 +84,13 @@
                   <label for="min_price" class="form-label">最低价格</label>
                   <input type="number" class="form-control" id="min_price" name="min_price" 
                          min="0" max="999" step="10"
-                         value="{% if filter_params.min_price %}{{ filter_params.min_price }}{% else %}0{% endif %}">
+                         value="">
                 </div>
                 <div class="col-md-6">
                   <label for="max_price" class="form-label">最高价格</label>
                   <input type="number" class="form-control" id="max_price" name="max_price" 
                          min="1" max="1000" step="10"
-                         value="{% if filter_params.max_price %}{{ filter_params.max_price }}{% else %}1000{% endif %}">
+                         value="">
                 </div>
               </div>
             </div>
@@ -98,78 +106,7 @@
           </form>
         </div>
       </div>
-
-      {% if filter_params.region or filter_params.min_price or filter_params.max_price or filter_params.score or filter_params.level %}
-      <div class="alert alert-primary alert-dismissible fade show">
-        <h5 class="alert-heading mb-2">当前筛选条件</h5>
-        <div class="filter-tags">
-          {% if filter_params.region %}
-          <span class="badge bg-primary me-2">
-            <i class="bi bi-geo-alt me-1"></i>地区: {{ filter_params.region }}
-          </span>
-          {% endif %}
-          {% if filter_params.min_price or filter_params.max_price %}
-          <span class="badge bg-primary me-2">
-            <i class="bi bi-currency-yen me-1"></i>价格: 
-            {% if filter_params.min_price %}{{ filter_params.min_price }}元{% else %}0元{% endif %}
-            - 
-            {% if filter_params.max_price %}{{ filter_params.max_price }}元{% else %}不限{% endif %}
-          </span>
-          {% endif %}
-          {% if filter_params.score %}
-          <span class="badge bg-primary me-2">
-            <i class="bi bi-star me-1"></i>评分: {{ filter_params.score }}分+
-          </span>
-          {% endif %}
-          {% if filter_params.level %}
-          <span class="badge bg-primary me-2">
-            <i class="bi bi-award me-1"></i>等级: {{ filter_params.level }}
-          </span>
-          {% endif %}
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-      {% endif %}
-
-            <div class="row">
-                {% for i in resultDataList %}
-                     <div class="col-lg-4">
-                                  <div class="card">
-                                        <div class="card-body">
-                                          <h5 class="card-title">{{ i.title }}</h5>
-                                            <a href="{{ i.detailUrl }}">
-                                                                <img style="width:80%" src="{{ i.cover }}" alt="">
-
-                                            </a>
-
-
-                                            <div style="margin:7px 0">
-                                                评分：<span class="badge bg-primary">{{ i.score }}分</span>
-                                            </div>
-
-                                            <div style="margin:7px 0">
-                                                等级：<span class="" style="color: #f60">{{ i.level }}</span>
-                                            </div>
-
-
-                                            <div style="margin:7px 0">
-                                                价格：<span class="" style="color:#008c8c">${{ i.price }}元</span>
-                                             </div>
-                                            <div style="margin:7px 0">
-                                                详情地址：<span class="" >{{ i.detailAddress }}</span>
-                                            </div>
-                                            <div style="margin:7px 0">
-                                                {% for img in i.img_list %}
-                                                    <img style="width:20%;border:2px solid #ccc;padding:5px;margin-right:5px;margin-bottom: 5px" src="{{ img }}" alt="">
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                  </div>
-                    </div>
-               {% endfor %}
-        </div>
-
-            </section>
+    </section>
 
 
 {% endblock %}
