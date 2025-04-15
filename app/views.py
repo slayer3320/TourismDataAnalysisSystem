@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from app.models import User,TravelInfo
 from django.http import HttpResponse
 from app.recommdation import getUser_ratings,user_bases_collaborative_filtering
-from app.utils import errorResponse,getHomeData,getPublicData,getChangeSelfInfoData,getAddCommentsData,getEchartsData,getRecommendationData
+from app.utils import errorResponse,getHomeData,getPublicData,getChangeSelfInfoData,getAddCommentsData,getEchartsData,getRecommendationData,check_tables
 
 def login(request):
     if request.method == 'GET':
@@ -348,86 +348,24 @@ def citySidebarAnalysis(request):
     selectedCity = request.GET.get('city', cityList[0] if cityList else '北京')
     
     # 获取选定城市的景点数据
-    travelList = getPublicData.getAllTravelInfoMapData(selectedCity)
-    
-    # 计算星级占比数据
-    starRatioDic = {}
-    for travel in travelList:
-        if starRatioDic.get(travel.level, -1) == -1:
-            starRatioDic[travel.level] = 1
-        else:
-            starRatioDic[travel.level] += 1
-    
-    starRatioData = []
-    for key, value in starRatioDic.items():
-        starRatioData.append({
-            'name': key if key else '未知',
-            'value': value
-        })
-    
-    # 计算价格分析数据
-    priceAnalysisXData = ['免费', '100元以内', '200元以内', '300元以内', '400元以内', '500元以内', '500元以外']
-    priceAnalysisYData = [0 for _ in range(len(priceAnalysisXData))]
-    
-    for travel in travelList:
-        try:
-            price = float(travel.price)
-            if price <= 10:
-                priceAnalysisYData[0] += 1
-            elif price <= 100:
-                priceAnalysisYData[1] += 1
-            elif price <= 200:
-                priceAnalysisYData[2] += 1
-            elif price <= 300:
-                priceAnalysisYData[3] += 1
-            elif price <= 400:
-                priceAnalysisYData[4] += 1
-            elif price <= 500:
-                priceAnalysisYData[5] += 1
-            elif price > 500:
-                priceAnalysisYData[6] += 1
-        except ValueError:
-            # 处理价格不是数字的情况
-            pass
-    
-    # Prepare word cloud data from attraction titles
-    wordCloudData = []
-    title_counts = {}
-    for travel in travelList:
-        title = travel.title
-        if title in title_counts:
-            title_counts[title] += 1
-        else:
-            title_counts[title] = 1
-    
-    for title, count in title_counts.items():
-        wordCloudData.append({
-            'name': title,
-            'value': count * 10  # Scale for better visualization
-        })
+    from app.utils.fetch_data import fetch_scenic_spots_by_city
 
-    # Prepare word cloud data from comments
-    commentCloudData = []
-    comment_counts = {}
-    for travel in travelList:
-        try:
-            comments = eval(travel.comments) if travel.comments else []
-            for comment in comments:
-                words = jieba.cut(comment['content'])
-                for word in words:
-                    if len(word) > 1:  # Only include words with 2+ characters
-                        if word in comment_counts:
-                            comment_counts[word] += 1
-                        else:
-                            comment_counts[word] = 1
-        except:
-            continue
+    # 获取选定城市的景点列表
+    travelList = fetch_scenic_spots_by_city(selectedCity)
+    travelList = [{'id': travel[0], 'name': travel[1], 'grade': travel[2], 'score': travel[3], 'ticket_price': travel[4], 'comments': travel[5], 'url': travel[6]} for travel in travelList]
+    # 这里需要确保使用正确的索引来访问元组中的数据
     
-    for word, count in comment_counts.items():
-        commentCloudData.append({
-            'name': word,
-            'value': count * 5  # Scale for better visualization
-        })
+    # 获取星级占比数据
+    starRatioData = check_tables.get_star_ratio(selectedCity)
+    
+    # 获取价格分析数据
+    priceAnalysisData = check_tables.get_price_analysis(selectedCity)
+    priceAnalysisXData = [str(price) for price, _ in priceAnalysisData]
+    priceAnalysisYData = [count for _, count in priceAnalysisData]
+    
+    # 保留一个占位符以避免报错
+    wordCloudData = []
+    commentCloudData = []
 
     return render(request, 'citySidebarAnalysis.html', {
         'userInfo': userInfo,

@@ -60,7 +60,7 @@
                 </div>
                 <div class="col-md-4">
                   <div class="input-group mb-3">
-                    <span class="input-group-text">城市</span>
+                    <span class="input-group-text">城市/风景区</span>
                     <select id="citySelect" name="city" class="form-select">
                 {% for city in cityList %}
                   <option value="{{ city }}" {% if city == selectedCity or not selectedCity and city == '澳门' %}selected{% endif %}>{{ city }}</option>
@@ -88,6 +88,7 @@
               });
 
               
+
               document.getElementById('provinceSelect').addEventListener('change', function() {
                   const province = this.value;
                   document.getElementById('currentProvince').textContent = province;
