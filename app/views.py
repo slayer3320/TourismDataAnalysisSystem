@@ -353,11 +353,17 @@ def citySidebarAnalysis(request):
     # 获取选定城市的景点列表(只包含景区名、等级、评分和价格)
     travelList = check_tables.get_scenic_spots_list(selectedCity)
     travelList = [{
+        'id': travel[0],
         'name': travel[1], 
         'grade': travel[2], 
         'score': travel[3], 
         'ticket_price': travel[4],
         'image_url': travel[5],
+        'address': travel[6],
+        'type': travel[7],
+        'intro': travel[8],
+        'heat': travel[9],
+        'comments': travel[10],
     } for travel in travelList]
     
     # 获取星级占比数据
@@ -396,19 +402,23 @@ def travelDetail(request, id):
     year, mon, day = getHomeData.getNowTime()
     
     # 获取景点详细信息
-    travel = TravelInfo.objects.get(id=id)
+    travel = check_tables.get_scenic_spots_list_by_id(id)
+    travelList = [{
+        'id': travel[0],
+        'name': travel[1], 
+        'grade': travel[2], 
+        'score': travel[3], 
+        'ticket_price': travel[4],
+        'image_url': travel[5],
+        'address': travel[6],
+        'type': travel[7],
+        'intro': travel[8],
+        'heat': travel[9],
+        'comments': travel[10],
+    }]
     
-    # 处理评论数据
-    try:
-        comments = eval(travel.comments) if travel.comments else []
-    except:
-        comments = []
-    
-    # 处理图片列表
-    try:
-        img_list = eval(travel.img_list) if travel.img_list else []
-    except:
-        img_list = []
+    # 这里应该取列表中的第一个元素（字典）
+    travel_data = travelList[0]
     
     return render(request, 'travelDetail.html', {
         'userInfo': userInfo,
@@ -418,18 +428,17 @@ def travelDetail(request, id):
             'day': day
         },
         'travel': {
-            'title': travel.title,
-            'level': travel.level,
-            'score': travel.score,
-            'price': travel.price,
-            'saleCount': travel.saleCount,
-            'province': travel.province,
-            'detailAddress': travel.detailAddress,
-            'shortIntro': travel.shortIntro,
-            'detailIntro': travel.detailIntro,
-            'img_list': img_list,
-            'comments': comments,
-            'commentsLen': travel.commentsLen
+            'id': travel_data['id'],
+            'name': travel_data['name'],
+            'grade': travel_data['grade'],
+            'score': travel_data['score'],
+            'ticket_price': travel_data['ticket_price'],
+            'image_url': travel_data['image_url'],
+            'address': travel_data['address'],
+            'type': travel_data['type'],
+            'intro': travel_data['intro'],
+            'heat': travel_data['heat'],
+            'comments': travel_data['comments'],
         }
     })
 

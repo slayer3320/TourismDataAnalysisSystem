@@ -4,68 +4,48 @@
 <div class="baseInfoModule">
   <div class="swiper">
     <div class="swiper-wrapper">
-      {% for img in travel.img_list %}
       <div class="swiper-slide">
-        <img src="{{ img }}" class="img-fluid" alt="景区图片">
+        <img src="{{ travel.image_url }}" class="img-fluid" alt="景区图片">
       </div>
-      {% endfor %}
     </div>
     <div class="swiper-pagination"></div>
-    <div class="swiper-button-prev"></div>
-    <div class="swiper-button-next"></div>
   </div>
 
   <div class="baseInfoMain">
     <div class="titleview d-flex justify-content-between align-items-center">
       <div class="title">
-        <h1 class="mb-0">{{ travel.title }}</h1>
-        <div class="titleTips badge bg-primary">{{ travel.level }}</div>
+        <h1 class="mb-0">{{ travel.name }}</h1>
+        <div class="titleTips badge bg-primary">{{ travel.grade }}</div>
       </div>
       <div class="heatView text-end">
-        <div class="text-danger fs-4">¥{{ travel.price }}</div>
-        <div class="text-muted">月销: {{ travel.saleCount }}</div>
+        <div class="text-danger fs-4">¥{{ travel.ticket_price }}</div>
+        <div class="text-muted">热度: {{ travel.heat }}</div>
       </div>
     </div>
-
-    <div class="comment p-3 bg-light rounded mb-3">{{ travel.shortIntro }}</div>
     
     <div class="rankView d-flex align-items-center gap-3 mb-3">
       <span class="badge bg-success p-2">{{ travel.score }}分</span>
-      <span class="text-muted">总评价数: {{ travel.commentsLen }}</span>
+      <span class="text-muted">评论数: {{ travel.comments }}</span>
     </div>
 
     <div class="basenfocontent">
       <div class="info-item">
         <h5>景区地址</h5>
-        <p>{{ travel.province }} {{ travel.detailAddress }}</p>
+        <p>{{ travel.address }}</p>
+      </div>
+      <div class="info-item">
+        <h5>景区类型</h5>
+        <p>{{ travel.type }}</p>
       </div>
       <div class="info-item">
         <h5>详细介绍</h5>
-        <p>{{ travel.detailIntro }}</p>
+        <p>{{ travel.intro }}</p>
       </div>
     </div>
   </div>
 
   <div class="checkErrorView"></div>
   <p class="phonePopup"></p>
-</div>
-
-<div class="commentsSection mt-5">
-  <h4 class="mb-4 pb-2 border-bottom">游客评价</h4>
-  <div class="commentsList">
-    {% for comment in travel.comments %}
-    <div class="commentItem card mb-3">
-      <div class="card-body">
-        <div class="commentHeader d-flex justify-content-between mb-2">
-          <strong>{{ comment.author }}</strong>
-          <span class="text-warning">{{ comment.score }}分</span>
-        </div>
-        <p class="mb-2">{{ comment.content }}</p>
-        <small class="text-muted">{{ comment.date }}</small>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
 </div>
 {% endblock %}
 

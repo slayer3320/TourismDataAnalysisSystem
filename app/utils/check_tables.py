@@ -54,6 +54,32 @@ def get_star_ratio(city_name):
         cursor.close()
         connection.close()
 
+def get_scenic_spots_list_by_id(spot_id):
+    connection = connect_to_database()
+    if not connection:
+        return []  # 如果连接失败，直接返回空列表
+    
+    cursor = connection.cursor()
+    
+    try:
+        # 查询指定ID的景点信息
+        query = """
+            SELECT s.id, s.name, s.grade, s.score, s.ticket_price,
+                   i.url as image_url, s.address, s.type, s.intro, s.heat, s.comments
+            FROM scenic_spots s
+            LEFT JOIN scenic_images i ON s.id = i.id
+            WHERE s.id = %s
+        """
+        cursor.execute(query, (spot_id,))
+        result = cursor.fetchone()
+        
+        return result if result else []
+    
+    finally:
+        # 确保无论如何都会关闭连接
+        cursor.close()
+        connection.close()
+
 def check_scenic_images():
     """临时函数：检查scenic_images表数据"""
     connection = connect_to_database()
@@ -125,9 +151,10 @@ def get_scenic_spots_list(city_name):
         city_id = city_result[0]
         
         # 2. 查询景点列表及图片URL
+        # id,city_id,name,grade,address,type,intro,ticket_price,score,heat,comments,url
         query = """
             SELECT s.id, s.name, s.grade, s.score, s.ticket_price,
-                   i.url as image_url
+                   i.url as image_url, s.address, s.type, s.intro, s.heat, s.comments
             FROM scenic_spots s
             LEFT JOIN scenic_images i ON s.id = i.id
             WHERE s.city_id = %s
