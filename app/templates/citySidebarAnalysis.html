@@ -48,25 +48,22 @@
           <div class="row mb-3">
             <div class="col-sm-12">
               <div class="row align-items-center mb-3">
-                <div class="col-sm-6">
-                  <div class="row align-items-center">
-                    <label class="col-sm-4 col-form-label">省份</label>
-                    <div class="col-sm-8">
-                      <select id="provinceSelect" class="form-select">
-                        {% for province in provinceList %}
-                          <option value="{{ province }}">{{ province }}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
+                <div class="col-md-4">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text">省份</span>
+                    <select id="provinceSelect" class="form-select">
+                      {% for province in provinceList %}
+                        <option value="{{ province }}">{{ province }}</option>
+                      {% endfor %}
+                    </select>
                   </div>
                 </div>
-                <div class="col-sm-6">
-                  <div class="row align-items-center">
-                    <label class="col-sm-4 col-form-label">城市</label>
-                    <div class="col-sm-8">
-                      <select id="citySelect" name="city" class="form-select">
+                <div class="col-md-4">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text">城市</span>
+                    <select id="citySelect" name="city" class="form-select">
                 {% for city in cityList %}
-                  <option value="{{ city }}" {% if city == selectedCity %}selected{% endif %}>{{ city }}</option>
+                  <option value="{{ city }}" {% if city == selectedCity or not selectedCity and city == '澳门' %}selected{% endif %}>{{ city }}</option>
                 {% endfor %}
               </select>
 
@@ -90,15 +87,42 @@
                       });
               });
 
-              document.getElementById('citySelect').addEventListener('change', function() {
-                  document.getElementById('currentCity').textContent = this.value;
+              
+              document.getElementById('provinceSelect').addEventListener('change', function() {
+                  const province = this.value;
+                  document.getElementById('currentProvince').textContent = province;
+                  fetch(`/app/get_cities?province=${encodeURIComponent(province)}`)
+                      .then(response => response.json())
+                      .then(cities => {
+                          const citySelect = document.getElementById('citySelect');
+                          citySelect.innerHTML = '';
+                          cities.forEach(city => {
+                              const option = document.createElement('option');
+                              option.value = city;
+                              option.textContent = city;
+                              citySelect.appendChild(option);
+                          });
+                          // 更新当前城市显示但不触发页面加载
+                          document.getElementById('currentCity').textContent = cities[0];
+                      });
               });
               </script>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-12 text-center">
+              <button id="confirmCityBtn" class="btn btn-primary mx-auto" style="width: 120px;">确定</button>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <script>
+      document.getElementById('confirmCityBtn').addEventListener('click', function() {
+        const city = document.getElementById('citySelect').value;
+        window.location.href = `/app/citySidebarAnalysis?city=${encodeURIComponent(city)}`;
+      });
+    </script>
   </div>
 
   <div class="row">
@@ -283,24 +307,12 @@
   };
   commentCloudChart.setOption(commentCloudOption);
 
-  // 城市选择变化时直接跳转
-  $('#citySelect').change(function() {
-    var city = $(this).val();
-    window.location.href = window.location.pathname + '?city=' + encodeURIComponent(city);
-  });
 </script>
 {% endblock %}
 
 {% block echarts %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  // 城市选择变化事件
-  $('#citySelect').change(function() {
-    var city = $(this).val();
-    // 立即更新URL和页面内容
-    window.location.href = window.location.pathname + '?city=' + encodeURIComponent(city);
-  });
-
   // 星级占比图表
   var starRatioChart = echarts.init(document.getElementById('starRatioChart'));
   var starRatioOption = {
