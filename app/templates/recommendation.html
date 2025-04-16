@@ -61,9 +61,9 @@
               <label for="score" class="form-label">最低评分</label>
               <select id="score" name="score" class="form-select">
                 <option value="">全部评分</option>
-                <option value="3">3分及以上</option>
-                <option value="4">4分及以上</option>
-                <option value="4.5">4.5分及以上</option>
+                <option value="3" {% if filter_params.score == "3" %}selected{% endif %}>3分及以上</option>
+                <option value="4" {% if filter_params.score == "4" %}selected{% endif %}>4分及以上</option>
+                <option value="4.5" {% if filter_params.score == "4.5" %}selected{% endif %}>4.5分及以上</option>
               </select>
             </div>
 
@@ -71,9 +71,9 @@
               <label for="level" class="form-label">景点等级</label>
               <select id="level" name="level" class="form-select">
                 <option value="">全部等级</option>
-                <option value="5A">5A级</option>
-                <option value="4A">4A级</option>
-                <option value="3A">3A级</option>
+                <option value="5A" {% if filter_params.level == "5A" %}selected{% endif %}>5A级</option>
+                <option value="4A" {% if filter_params.level == "4A" %}selected{% endif %}>4A级</option>
+                <option value="3A" {% if filter_params.level == "3A" %}selected{% endif %}>3A级</option>
               </select>
             </div>
           </div>
@@ -226,13 +226,34 @@ $(document).ready(function() {
         
         // 添加所有表单参数到URL
         form.find('input, select').each(function() {
-            if ($(this).attr('name') && $(this).val()) {
-                url.searchParams.set($(this).attr('name'), $(this).val());
+            const name = $(this).attr('name');
+            const value = $(this).val();
+            if (name && value) {
+                url.searchParams.set(name, value);
             }
         });
+
+        // 确保保留URL中已有的参数
+        const existingParams = new URLSearchParams(window.location.search);
+        for (const [key, value] of existingParams) {
+            if (!url.searchParams.has(key)) {
+                url.searchParams.set(key, value);
+            }
+        }
         
         // 更新表单action并允许正常提交
         form.attr('action', url.toString());
+    });
+
+    // 页面加载时从URL参数设置表单值
+    $(document).ready(function() {
+        const params = new URLSearchParams(window.location.search);
+        params.forEach((value, key) => {
+            const element = $(`[name="${key}"]`);
+            if (element.length) {
+                element.val(value);
+            }
+        });
     });
 });
 </script>
