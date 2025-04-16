@@ -815,6 +815,35 @@ h6 {
   transition: all 0.3s ease;
 }
 
+/* 优化选择框样式 */
+.form-select {
+  height: 42px;
+  border: 1px solid #d1d6ff;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(65, 84, 241, 0.1);
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.form-select:focus {
+  border-color: #4154f1;
+  box-shadow: 0 2px 12px rgba(65, 84, 241, 0.2);
+}
+
+.form-select:hover {
+  border-color: #aab7ff;
+  box-shadow: 0 2px 10px rgba(65, 84, 241, 0.15);
+}
+
+/* 选择框标签样式 */
+.form-label {
+  font-weight: 600;
+  color: #012970;
+  margin-bottom: 8px;
+  display: block;
+}
+
 .filter-group-title {
   font-size: 16px;
   font-weight: 600;
