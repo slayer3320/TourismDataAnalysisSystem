@@ -159,19 +159,24 @@ def recommend_attractions(params):
     else:
         df_merged['time_match'] = 1.0
 
-    # 综合评分计算（动态权重）
+    # 综合评分计算（优化权重，更侧重评分）
     weights = {
-        'heat': 0.3,
-        'score': 0.25,
-        'sentiment': 0.2,
+        'heat': 0.25,
+        'score': 0.4,  # 提高评分权重
+        'sentiment': 0.15,  # 降低情感分析权重
         'time_match': 0.15,
-        'price_ratio': 0.1
+        'price_ratio': 0.05  # 降低价格权重
     }
 
     # 价格标准化
     max_price = df_merged['ticket_price'].max() or 1  # 避免除零错误
     df_merged['price_ratio'] = 1 - (df_merged['ticket_price'] / max_price)
 
+    # 检查图片是否存在（img_list字段）
+    df_merged['has_images'] = df_merged['img_list'].apply(
+        lambda x: 0.2 if x and len(json.loads(x)) > 0 else 0
+    )
+    
     # 计算综合得分（处理NaN）
     df_merged['composite_score'] = (
             df_merged['heat'].fillna(0) * weights['heat'] +
@@ -180,6 +185,17 @@ def recommend_attractions(params):
             df_merged['time_match'].fillna(1) * weights['time_match'] +
             df_merged['price_ratio'].fillna(0) * weights['price_ratio']
     )
+    
+    # 添加季节性因素和图片加分
+    current_month = datetime.now().month
+    df_merged['seasonal_boost'] = df_merged['peak_months'].apply(
+        lambda x: 0.1 if current_month in x else 0
+    )
+    df_merged['composite_score'] = (
+        df_merged['composite_score'] + 
+        df_merged['seasonal_boost'] + 
+        df_merged['has_images']
+    )
 
     # 结果格式化
     final_columns = [
@@ -187,10 +203,14 @@ def recommend_attractions(params):
         'composite_score', 'keywords', 'peak_months', 'avg_sentiment'
     ]
 
+    # 先按是否有图片排序，再按综合评分排序
+    df_sorted = df_merged.sort_values(
+        ['has_images', 'composite_score'], 
+        ascending=[False, False]
+    ).head(20)
+    
     return (
-        df_merged.sort_values('composite_score', ascending=False)
-        .head(20)
-        [final_columns]
+        df_sorted[final_columns]
         .assign(
             # 安全处理列表类型（二次校验）
             keywords=lambda df: df['keywords'].apply(

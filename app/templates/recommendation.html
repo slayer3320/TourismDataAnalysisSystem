@@ -61,9 +61,11 @@
               <label for="score" class="form-label">最低评分</label>
               <select id="score" name="score" class="form-select">
                 <option value="">全部评分</option>
-                <option value="3" {% if filter_params.score == "3" %}selected{% endif %}>3分及以上</option>
-                <option value="4" {% if filter_params.score == "4" %}selected{% endif %}>4分及以上</option>
-                <option value="4.5" {% if filter_params.score == "4.5" %}selected{% endif %}>4.5分及以上</option>
+                <option value="4.5" {% if filter_params.score == "4.5" %}selected{% endif %}>4.5分及以上(优秀)</option>
+                <option value="4.0" {% if filter_params.score == "4.0" %}selected{% endif %}>4.0-4.5分(良好)</option>
+                <option value="3.5" {% if filter_params.score == "3.5" %}selected{% endif %}>3.5-4.0分(一般)</option>
+                <option value="3.0" {% if filter_params.score == "3.0" %}selected{% endif %}>3.0-3.5分(较差)</option>
+                <option value="0" {% if filter_params.score == "0" %}selected{% endif %}>3.0分以下(差)</option>
               </select>
             </div>
 
@@ -71,9 +73,9 @@
               <label for="level" class="form-label">景点等级</label>
               <select id="level" name="level" class="form-select">
                 <option value="">全部等级</option>
-                <option value="5A" {% if filter_params.level == "5A" %}selected{% endif %}>5A级</option>
-                <option value="4A" {% if filter_params.level == "4A" %}selected{% endif %}>4A级</option>
-                <option value="3A" {% if filter_params.level == "3A" %}selected{% endif %}>3A级</option>
+                <option value="5A" {% if filter_params.level == "5A" %}selected{% endif %}>5A级(世界级)</option>
+                <option value="4A" {% if filter_params.level == "4A" %}selected{% endif %}>4A级(国家级)</option>
+                <option value="无评级" {% if filter_params.level == "无评级" %}selected{% endif %}>无评级景点</option>
               </select>
             </div>
           </div>
