@@ -62,7 +62,7 @@
         let data = e.data;
         return data ? `<div style="font-size:14px;margin-bottom:5px;color:#409eff">${data.name}</div>
                       <div>景点数量: <b>${data.value}</b></div>
-                      <div style="margin-top:5px;color:#666">点击查看详情</div>` 
+                      <div style="margin-top:5px;color:#666">点击查看省份分析</div>` 
                     : '暂未拥有数据'
       }
     },
@@ -216,12 +216,12 @@
   myChart.hideLoading();
   myChart.setOption(options);
   
-  // Handle click event
+  // Handle click event - navigate to city analysis page with province filter
   myChart.on('click', function(params) {
     if(params.data) {
-      // You can add navigation logic here
-      console.log('Clicked on:', params.name);
-      // Example: window.location.href = '/city-detail?name=' + params.name;
+      // Navigate to city analysis page with province filter
+      const province = encodeURIComponent(params.name);
+      window.location.href = `/app/citySidebarAnalysis?province=${province}&city=${province}`;
     }
   });
   

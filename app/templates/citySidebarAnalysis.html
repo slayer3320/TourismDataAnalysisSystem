@@ -40,14 +40,15 @@
               const provinceSelect = $('#provinceSelect');
               const citySelect = $('#citySelect');
               
-              // 从localStorage获取保存的选择
-              const savedProvince = localStorage.getItem('selectedProvince');
-              const savedCity = localStorage.getItem('selectedCity');
+              // 从URL参数获取省份
+              const urlParams = new URLSearchParams(window.location.search);
+              const urlProvince = urlParams.get('province');
               
               // 设置省份选择
-              if (savedProvince) {
-                provinceSelect.val(savedProvince);
-                $('#currentProvince').text(savedProvince);
+              if (urlProvince) {
+                provinceSelect.val(urlProvince);
+                $('#currentProvince').text(urlProvince);
+                localStorage.setItem('selectedProvince', urlProvince);
               }
               
               // 省份选择变化时加载对应城市
