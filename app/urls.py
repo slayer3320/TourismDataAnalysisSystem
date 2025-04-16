@@ -16,6 +16,7 @@ urlpatterns = [
     path('priceChar/',views.priceChar, name='priceChar'),
     path('commentsChar/',views.commentsChar, name='commentsChar'),
     path('recommendation/',views.recommendation, name='recommendation'),
+    path('recommendation/<str:city>/',views.recommendation, name='recommendation_city'),
     path('detailIntroCloud/',views.detailIntroCloud, name='detailIntroCloud'),
     path('commentContentCloud/',views.commentContentCloud, name='commentContentCloud'),
     path('citySidebarAnalysis/',views.citySidebarAnalysis, name='citySidebarAnalysis'),

@@ -248,14 +248,15 @@ def commentsChar(request):
         }
     })
 
-def recommendation(request):
+def recommendation(request, city=None):
     username = request.session.get('username')
     userInfo = User.objects.get(username=username)
     year, mon, day = getHomeData.getNowTime()
     
     # 获取筛选参数
     province = request.GET.get('province') or request.POST.get('province')
-    city = request.GET.get('city') or request.POST.get('city')
+    # 优先使用URL中的城市参数
+    city = city or request.GET.get('city') or request.POST.get('city')
     min_price = request.GET.get('min_price') or request.POST.get('min_price')
     max_price = request.GET.get('max_price') or request.POST.get('max_price')
     score = request.GET.get('score') or request.POST.get('score')
