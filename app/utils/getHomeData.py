@@ -8,24 +8,20 @@ userData = getPublicData.getAllUsersInfoData()
 #获取三个数据特征：”5A级景点的个数””评论最多的景区“”拥有景点最多的省份“
 def getHomeTagData():
     a5Len = 0
-    a4Len = 0
     commentsLenMax = 0
     commentsLenTitle = ''
     provienceDic = {}
     for travel in travelMapData:
-        level = travel.level.replace('景区', '级')  # 统一转换为"5A级"格式
-        if '5A' in level: a5Len += 1
-        if '4A' in level: a4Len += 1
-        comments_len = int(travel.commentsLen) if travel.commentsLen else 0
-        if comments_len > commentsLenMax:
-            commentsLenMax = comments_len
+        if travel.level == '5A景区':a5Len += 1
+        if travel.commentsLen and int(travel.commentsLen) > commentsLenMax:
+            commentsLenMax = int(travel.commentsLen)
             commentsLenTitle = travel.title
         if provienceDic.get(travel.province,-1) == -1 : provienceDic[travel.province] = 1
         else:provienceDic[travel.province] += 1
 
     provienceDicSort = list(sorted(provienceDic.items(),key=lambda x:x[1],reverse=True))[0][0]
 
-    return {'5A': a5Len, '4A': a4Len}, commentsLenTitle, provienceDicSort
+    return a5Len,commentsLenTitle,provienceDicSort
 
 def getAnthorData():
     scoreTop10 = []  #应该不止有10个，所以取随机
