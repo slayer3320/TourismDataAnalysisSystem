@@ -16,22 +16,54 @@
 </section>
 {% endblock %} {% block echarts %}
 <script>
-  var myChart = echarts.init(document.getElementById('mains'));
+  var myChart = echarts.init(document.getElementById('mains'), null, {
+    renderer: 'canvas',
+    width: 'auto',
+    height: 'auto'
+  });
+  
+  // Show loading animation
+  myChart.showLoading({
+    text: '正在加载地图数据...',
+    color: '#409eff',
+    textColor: '#000',
+    maskColor: 'rgba(255, 255, 255, 0.8)',
+    zlevel: 0
+  });
+
   var mydata = {{ geoData | safe }}
+  
+  // Preprocess data for better performance
+  var processedData = mydata.map(item => {
+    return {
+      name: item.name,
+      value: item.value,
+      // Add additional properties for future use
+      itemStyle: {
+        borderWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.2)'
+      }
+    }
+  });
+
   var options = {
     tooltip: {
       triggerOn: "mousemove",
       padding:8,
       borderWidth:1,
       borderColor:'#409eff',
-      backgroundColor:'rgba(255,255,255,0.2)',
+      backgroundColor:'rgba(255,255,255,0.9)',
       textStyle:{
         color:'#000',
-        fontSize:12
+        fontSize:12,
+        fontWeight: 'bold'
       },
       formatter: function(e, t, n) {
         let data = e.data;
-        return data ? '城市：' + data.name + '\t景点数：' + data.value : '暂未拥有数据'
+        return data ? `<div style="font-size:14px;margin-bottom:5px;color:#409eff">${data.name}</div>
+                      <div>景点数量: <b>${data.value}</b></div>
+                      <div style="margin-top:5px;color:#666">点击查看详情</div>` 
+                    : '暂未拥有数据'
       }
     },
     visualMap: {
@@ -94,11 +126,20 @@
       roam: true,
       scaleLimit: {
         min: 1,
-        max: 2
+        max: 3
       },
       zoom: 1,
       top: 10,
       layoutSize: "100%",
+      // Add zoom control buttons
+      roamController: {
+        show: true,
+        x: 'right',
+        y: 'top',
+        mapTypeControl: {
+          'china': true
+        }
+      },
       label: {
         normal: {
           show: true,
@@ -146,13 +187,47 @@
     },
     series: [
       {
-        name: "成果预览",
+        name: "热门景区分布",
         type: "map",
         geoIndex: 0,
-        data: mydata
+        data: processedData,
+        emphasis: {
+          label: {
+            show: true
+          },
+          itemStyle: {
+            areaColor: '#ff7f50'
+          }
+        },
+        // Add click event
+        select: {
+          itemStyle: {
+            areaColor: '#ff7f50'
+          },
+          label: {
+            show: true
+          }
+        }
       }
     ]
   }
+  
+  // Hide loading when ready
+  myChart.hideLoading();
   myChart.setOption(options);
+  
+  // Handle click event
+  myChart.on('click', function(params) {
+    if(params.data) {
+      // You can add navigation logic here
+      console.log('Clicked on:', params.name);
+      // Example: window.location.href = '/city-detail?name=' + params.name;
+    }
+  });
+  
+  // Handle window resize
+  window.addEventListener('resize', function() {
+    myChart.resize();
+  });
 </script>
 {% endblock %}
