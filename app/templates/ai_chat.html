@@ -3,6 +3,12 @@
   <div class="ai-chat-header">
     <h2 class="ai-chat-title">SightSeekAI旅游助手</h2>
     <div class="ai-chat-subtitle">您的智能旅游规划伙伴</div>
+    <div class="model-selector">
+      <select id="model-select">
+        <option value="deepseek-chat">DeepSeek Chat</option>
+        <option value="sightseek-chat">SightSeek-chat</option>
+      </select>
+    </div>
   </div>
 
   <div class="ai-chat-main">
@@ -189,7 +195,7 @@
               Authorization: "Bearer sk-1874ba502a56430aa4b5a858a2a2ed57",
             },
             body: JSON.stringify({
-              model: "deepseek-chat",
+              model: document.getElementById("model-select").value,
               messages: [
                 {
                   role: "system",
@@ -325,6 +331,36 @@
     font-size: 14px;
     color: rgba(255, 255, 255, 0.8);
     margin-top: 6px;
+  }
+
+  .model-selector {
+    margin-top: 12px;
+  }
+
+  .model-selector select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .model-selector select:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .model-selector select:focus {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: white;
+  }
+
+  .model-selector option {
+    background: #4154f1;
+    color: white;
   }
 
   .ai-chat-main {
