@@ -9,20 +9,21 @@
 {% endblock %}
 
 {% block content %}
-      <div class="pagetitle" style="display: flex;align-items: center">
-      <div style="margin-right: auto">
+      <div class="pagetitle d-flex justify-content-between align-items-center">
+        <div>
           <h1>个人信息</h1>
-        <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="{% url 'home' %}">个人信息</a></li>
-          <li class="breadcrumb-item active">修改个人信息页面</li>
-        </ol>
-      </nav>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'home' %}">个人信息</a></li>
+              <li class="breadcrumb-item active">修改个人信息</li>
+            </ol>
+          </nav>
+        </div>
+        <div class="date-badge bg-primary-light rounded-pill px-3 py-2">
+          <i class="bi bi-calendar3 me-2"></i>
+          <span>{{ nowTime.year }}年{{ nowTime.mon }}月{{ nowTime.day }}日</span>
+        </div>
       </div>
-        <h5 style="font-weight: normal">
-            {{ nowTime.year }} - {{ nowTime.mon }} - {{ nowTime.day }}
-        </h5>
-    </div>
 
 
             <section class="section dashboard">
@@ -33,57 +34,154 @@
                     <div class="card-body">
                       <h5 class="card-title">修改个人信息</span></h5>
 
-                      <div class="activity">
-
-                          <form action="{% url 'changeSelfInfo' %}" method="POST" enctype="multipart/form-data">
-                              <div class="row mb-3">
-                                  <label for="inputText" class="col-sm-2 col-form-label">用户名</label>
-                                  <div class="col-sm-10">
-                                    <input type="text" name="username" disabled value="{{ userInfo.username }}" class="form-control">
+                      <div class="profile-edit-form">
+                          <form id="profileForm" action="{% url 'changeSelfInfo' %}" method="POST" enctype="multipart/form-data" novalidate>
+                              <div class="row mb-4">
+                                <label for="username" class="col-sm-2 col-form-label fw-bold text-primary">用户名</label>
+                                <div class="col-sm-10">
+                                  <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                    <input type="text" id="username" name="username" disabled 
+                                           value="{{ userInfo.username }}" class="form-control">
                                   </div>
                                 </div>
-                              <div class="row mb-3">
-                                  <label for="inputText" class="col-sm-2 col-form-label">地址</label>
-                                  <div class="col-sm-10">
-                                    <input type="text" name="address" value="{{ userInfo.address }}" class="form-control">
+                              </div>
+                              <div class="row mb-4">
+                                <label for="address" class="col-sm-2 col-form-label fw-bold text-primary">地址</label>
+                                <div class="col-sm-10">
+                                  <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                                    <input type="text" id="address" name="address" 
+                                           value="{{ userInfo.address }}" class="form-control"
+                                           placeholder="请输入您的地址">
+                                    <div class="invalid-feedback">
+                                      请输入有效的地址
+                                    </div>
                                   </div>
                                 </div>
-                              <div class="row mb-3">
-                                  <label for="inputText" class="col-sm-2 col-form-label">性别</label>
-                                  <div class="col-sm-10">
-                                    <select class="form-select" name="sex" aria-label="Default select example">
-                                          <option {% if userInfo.sex == '男' %}
-                                          selected
-                                          {% endif %}  value="男">男</option>
-                                          <option {% if userInfo.sex == '女' %}
-                                          selected
-                                          {% endif %} value="女">女</option>
-                                        </select>
+                              </div>
+                              <div class="row mb-4">
+                                <label for="sex" class="col-sm-2 col-form-label fw-bold text-primary">性别</label>
+                                <div class="col-sm-10">
+                                  <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-gender-ambiguous"></i></span>
+                                    <select class="form-select" id="sex" name="sex">
+                                      <option {% if userInfo.sex == '男' %}selected{% endif %} value="男">男</option>
+                                      <option {% if userInfo.sex == '女' %}selected{% endif %} value="女">女</option>
+                                    </select>
                                   </div>
                                 </div>
-                              <div class="row mb-3">
-                                  <label for="inputText" class="col-sm-2 col-form-label">个人简介</label>
-                                  <div class="col-sm-10">
-                                    <textarea name="textarea" class="form-control" placeholder="{{ userInfo.textarea }}" value="{{ userInfo.textarea }}" style="height: 100px;"></textarea>
+                              </div>
+                              <div class="row mb-4">
+                                <label for="bio" class="col-sm-2 col-form-label fw-bold text-primary">个人简介</label>
+                                <div class="col-sm-10">
+                                  <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                                    <textarea id="bio" name="textarea" class="form-control" 
+                                              placeholder="{{ userInfo.textarea }}" 
+                                              rows="4" style="min-height: 100px;"></textarea>
+                                    <div class="invalid-feedback">
+                                      个人简介不能超过200字
+                                    </div>
                                   </div>
+                                  <small class="text-muted float-end"><span id="bioCounter">0</span>/200</small>
                                 </div>
-                            <div class="row mb-3">
-                                  <label for="inputText" class="col-sm-2 col-form-label">头像上传</label>
-                                  <div class="col-sm-10">
-                                      <img style="width:100px;border:1px solid #ddd;padding:5px" src="/media/{{ userInfo.avatar }}" alt="">
-                                      <br>
-                                                                      <input type="file" name="avatar">
+                              </div>
+                            <div class="row mb-4">
+                              <label class="col-sm-2 col-form-label fw-bold text-primary">头像上传</label>
+                              <div class="col-sm-10">
+                                <div class="avatar-upload">
+                                  <div class="avatar-preview mb-3">
+                                    <img id="avatarPreview" src="/media/{{ userInfo.avatar }}" 
+                                         class="rounded-circle shadow" 
+                                         style="width:120px;height:120px;object-fit:cover;border:3px solid #f6f9ff">
                                   </div>
+                                  <div class="input-group">
+                                    <input type="file" id="avatarInput" name="avatar" 
+                                           class="form-control" accept="image/*">
+                                    <button class="btn btn-outline-secondary" type="button" 
+                                            onclick="document.getElementById('avatarInput').click()">
+                                      <i class="bi bi-upload me-2"></i>选择文件
+                                    </button>
+                                    <div class="invalid-feedback">
+                                      请上传有效的图片文件 (JPG/PNG)
+                                    </div>
+                                  </div>
+                                  <small class="text-muted">支持JPG/PNG格式，大小不超过2MB</small>
                                 </div>
-                              <div class="row mb-3">
-                                  <label for="inputText" class="col-sm-2 col-form-label"></label>
-                                    <div class="col-sm-10">
-                                        <button type="submit" class="btn btn-primary">提交</button>
-                                  </div>
+                              </div>
+                            </div>
+                              <div class="row mb-4">
+                                <div class="col-sm-10 offset-sm-2">
+                                  <button type="submit" class="btn btn-primary px-4 py-2">
+                                    <i class="bi bi-check-circle-fill me-2"></i>保存修改
+                                  </button>
+                                  <button type="reset" class="btn btn-outline-secondary ms-2 px-4 py-2">
+                                    <i class="bi bi-arrow-counterclockwise me-2"></i>重置
+                                  </button>
+                                </div>
                               </div>
                           </form>
-
                       </div>
+
+                      <script>
+                        // 头像预览
+                        document.getElementById('avatarInput').addEventListener('change', function(e) {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(event) {
+                              document.getElementById('avatarPreview').src = event.target.result;
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        });
+
+                        // 个人简介字数统计
+                        document.getElementById('bio').addEventListener('input', function() {
+                          const count = this.value.length;
+                          document.getElementById('bioCounter').textContent = count;
+                          if (count > 200) {
+                            this.classList.add('is-invalid');
+                          } else {
+                            this.classList.remove('is-invalid');
+                          }
+                        });
+
+                        // 表单验证
+                        document.getElementById('profileForm').addEventListener('submit', function(e) {
+                          let isValid = true;
+                          
+                          // 验证地址
+                          const address = document.getElementById('address');
+                          if (address.value.trim() === '') {
+                            address.classList.add('is-invalid');
+                            isValid = false;
+                          } else {
+                            address.classList.remove('is-invalid');
+                          }
+
+                          // 验证头像文件
+                          const avatarInput = document.getElementById('avatarInput');
+                          if (avatarInput.files.length > 0) {
+                            const file = avatarInput.files[0];
+                            const validTypes = ['image/jpeg', 'image/png'];
+                            if (!validTypes.includes(file.type)) {
+                              avatarInput.classList.add('is-invalid');
+                              isValid = false;
+                            } else if (file.size > 2 * 1024 * 1024) {
+                              avatarInput.classList.add('is-invalid');
+                              isValid = false;
+                            } else {
+                              avatarInput.classList.remove('is-invalid');
+                            }
+                          }
+
+                          if (!isValid) {
+                            e.preventDefault();
+                          }
+                        });
+                      </script>
 
                     </div>
                   </div>
