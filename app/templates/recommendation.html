@@ -132,7 +132,7 @@
   <div class="row">
     {% for travel in travelList %}
     <div class="col-lg-4 col-md-6">
-      <div class="card">
+      <div class="card travel-card">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="card-title mb-0">
@@ -141,17 +141,17 @@
             <span class="badge bg-primary">{{ travel.2 }}</span>
           </div>
           
-          <div class="text-center mb-3">
-            <img src="{{ travel.5 }}" alt="{{ travel.1 }}" class="img-fluid rounded" style="max-height: 200px;">
+          <div class="card-img-container mb-3">
+            <img src="{{ travel.5 }}" alt="{{ travel.1 }}" class="img-fluid rounded">
           </div>
           
           <div class="d-flex justify-content-between">
-            <div>
-              <i class="bi bi-star-fill text-warning"></i>
+            <div class="rating-badge">
+              <i class="bi bi-star-fill text-warning me-1"></i>
               <span>{{ travel.3 }}</span>
             </div>
-            <div>
-              <i class="bi bi-currency-yen"></i>
+            <div class="price-badge">
+              <i class="bi bi-currency-yen me-1"></i>
               <span>{{ travel.4 }}</span>
             </div>
           </div>
