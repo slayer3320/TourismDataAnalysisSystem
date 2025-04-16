@@ -602,13 +602,13 @@ h6 {
   bottom: 0;
   width: 300px;
   z-index: 996;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 20px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #aab7cf transparent;
   box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
-  background-color: #fff;
+  background: linear-gradient(to bottom, #ffffff 0%, #f8faff 100%);
 }
 @media (max-width: 1199px) {
   .sidebar {
@@ -668,11 +668,25 @@ h6 {
   margin-bottom: 5px;
 }
 .sidebar-nav .nav-heading {
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
-  color: #899bbd;
-  font-weight: 600;
-  margin: 10px 0 5px 15px;
+  color: #4154f1;
+  font-weight: 700;
+  margin: 20px 0 10px 15px;
+  letter-spacing: 1px;
+  position: relative;
+  padding-left: 10px;
+}
+.sidebar-nav .nav-heading::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 60%;
+  width: 3px;
+  background: #4154f1;
+  border-radius: 3px;
 }
 .sidebar-nav .nav-link {
   display: flex;
@@ -680,29 +694,55 @@ h6 {
   font-size: 15px;
   font-weight: 600;
   color: #4154f1;
-  transition: 0.3;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background: #f6f9ff;
-  padding: 10px 15px;
-  border-radius: 4px;
+  padding: 12px 15px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 5px rgba(65, 84, 241, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+.sidebar-nav .nav-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: #4154f1;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.3s ease;
+}
+.sidebar-nav .nav-link.active::before {
+  transform: scaleY(1);
 }
 .sidebar-nav .nav-link i {
   font-size: 16px;
-  margin-right: 10px;
+  margin-right: 12px;
   color: #4154f1;
+  transition: all 0.3s ease;
 }
 .sidebar-nav .nav-link.collapsed {
   color: #012970;
   background: #fff;
+  box-shadow: 0 1px 3px rgba(1, 41, 112, 0.1);
 }
 .sidebar-nav .nav-link.collapsed i {
   color: #899bbd;
 }
 .sidebar-nav .nav-link:hover {
-  color: #4154f1;
-  background: #f6f9ff;
+  color: #fff;
+  background: #4154f1;
+  transform: translateX(5px);
+  box-shadow: 0 4px 10px rgba(65, 84, 241, 0.2);
 }
 .sidebar-nav .nav-link:hover i {
-  color: #4154f1;
+  color: #fff;
+}
+.sidebar-nav .nav-link:hover::before {
+  transform: scaleY(1);
 }
 .sidebar-nav .nav-link .bi-chevron-down {
   margin-right: 0;
