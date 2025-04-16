@@ -153,6 +153,17 @@
         <div class="card-body">
           <h5 class="card-title">{{ selectedCity }} 景点星级占比</h5>
           <div id="starRatioChart" style="width:100%;height:400px"></div>
+          <div class="chart-description mt-3">
+            <h6>星级占比图说明：</h6>
+            <ul>
+              <li>图表展示{{ selectedCity }}各等级景点的数量占比</li>
+              <li>5A级：最高等级景区，代表国家级精品旅游景区</li>
+              <li>4A级：优秀等级景区，代表省级精品旅游景区</li>
+              <li>3A级：良好等级景区，代表市级优质旅游景区</li>
+              <li>其他：包括2A级及以下景区</li>
+              <li>扇形面积越大表示该等级景点数量越多</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -336,7 +347,8 @@
       left: 'center'
     },
     tooltip: {
-      trigger: 'item'
+      trigger: 'item',
+      formatter: '{a} <br/>{b}: {c}个 ({d}%)'
     },
     legend: {
       orient: 'vertical',
@@ -348,11 +360,26 @@
         type: 'pie',
         radius: '50%',
         data: {{ starRatioData | safe }},
+        label: {
+          show: true,
+          formatter: '{b}: {d}%',
+          fontSize: 14,
+          fontWeight: 'bold'
+        },
+        labelLine: {
+          show: true,
+          length: 20,
+          length2: 30
+        },
         emphasis: {
           itemStyle: {
             shadowBlur: 10,
             shadowOffsetX: 0,
             shadowColor: 'rgba(0, 0, 0, 0.5)'
+          },
+          label: {
+            show: true,
+            fontSize: 16
           }
         }
       }
