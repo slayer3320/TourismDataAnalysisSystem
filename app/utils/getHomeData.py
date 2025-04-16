@@ -8,20 +8,24 @@ userData = getPublicData.getAllUsersInfoData()
 #获取三个数据特征：”5A级景点的个数””评论最多的景区“”拥有景点最多的省份“
 def getHomeTagData():
     a5Len = 0
+    a4Len = 0
     commentsLenMax = 0
     commentsLenTitle = ''
     provienceDic = {}
     for travel in travelMapData:
-        if travel.level == '5A景区':a5Len += 1
-        if int(travel.commentsLen) > commentsLenMax:
-            commentsLenMax = int(travel.commentsLen)
+        level = travel.level.replace('景区', '级')  # 统一转换为"5A级"格式
+        if '5A' in level: a5Len += 1
+        if '4A' in level: a4Len += 1
+        comments_len = int(travel.commentsLen) if travel.commentsLen else 0
+        if comments_len > commentsLenMax:
+            commentsLenMax = comments_len
             commentsLenTitle = travel.title
         if provienceDic.get(travel.province,-1) == -1 : provienceDic[travel.province] = 1
         else:provienceDic[travel.province] += 1
 
     provienceDicSort = list(sorted(provienceDic.items(),key=lambda x:x[1],reverse=True))[0][0]
 
-    return a5Len,commentsLenTitle,provienceDicSort
+    return {'5A': a5Len, '4A': a4Len}, commentsLenTitle, provienceDicSort
 
 def getAnthorData():
     scoreTop10 = []  #应该不止有10个，所以取随机
@@ -36,7 +40,7 @@ def getAnthorData():
         randomIndex = random.randint(0, maxLen - 1)
         scoreTop10Data.append(scoreTop10[randomIndex])
 
-    saleCountTop10 = list(sorted(travelMapData,key=lambda x:int(x.saleCount),reverse=True))[:10]
+    saleCountTop10 = list(sorted(travelMapData,key=lambda x:int(x.saleCount) if x.saleCount else 0,reverse=True))[:10]
 
     return scoreTop10Data,saleCountTop10
 
@@ -81,3 +85,21 @@ def getUserCreateTimeData():
             'value': value
         })
     return resutData
+
+def getProvince5ACount():
+    provinceCount = {}
+    for travel in travelMapData:
+        level = travel.level.replace('景区', '级')
+        if '5A' in level:
+            if travel.province not in provinceCount:
+                provinceCount[travel.province] = 0
+            provinceCount[travel.province] += 1
+    
+    # 转换为前端需要的格式
+    result = []
+    for province, count in provinceCount.items():
+        result.append({
+            'name': province,
+            'value': count
+        })
+    return sorted(result, key=lambda x: x['value'], reverse=True)

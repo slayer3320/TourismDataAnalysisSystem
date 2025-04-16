@@ -1,118 +1,239 @@
-{% extends 'base.html' %}
-{% block title %}
-    推荐页面
-{% endblock %}
-
-{% block sidebar %}
-  {{ block.super }}
-{% endblock %}
-
+{% extends 'base.html' %} {# ========== 标题区块开始 ========== #} 
+{% block title %}推荐页面{% endblock %} {# ========== 标题区块结束 ========== #}
+{#========== 侧边栏区块开始 ========== #} 
+{% block sidebar %} {{ block.super }}
+{% endblock %} {# ========== 侧边栏区块结束 ========== #} 
+{#==========内容区块开始 ========== #} 
 {% block content %}
-      <div class="pagetitle" style="display: flex;align-items: center">
-      <div style="margin-right: auto">
-          <h1>景点推荐</h1>
-        <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="{% url 'home' %}">数据可视化</a></li>
-          <li class="breadcrumb-item active">景点推荐</li>
-        </ol>
-      </nav>
-      </div>
-        <h5 style="font-weight: normal">
-            {{ nowTime.year }} - {{ nowTime.mon }} - {{ nowTime.day }}
-        </h5>
-    </div>
+<div class="pagetitle" style="display: flex; align-items: center">
+  <div style="margin-right: auto">
+    <h1>景点推荐</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="{% url 'home' %}">数据可视化</a>
+        </li>
+        <li class="breadcrumb-item active">景点推荐</li>
+      </ol>
+    </nav>
+  </div>
+  <h5 style="font-weight: normal">
+    {{ nowTime.year }} - {{ nowTime.mon }} - {{ nowTime.day }}
+  </h5>
+</div>
 
-    <section class="section dashboard">
+<section class="section dashboard">
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="card-title mb-0">景点筛选</h5>
+        <button
+          class="btn btn-sm btn-outline-primary toggle-filters"
+          type="button"
+        >
+          <i class="bi bi-chevron-down"></i>
+        </button>
+      </div>
+
+      <form method="get" class="filter-form">
+        <div class="filter-group">
+          <h6 class="filter-group-title">基本条件</h6>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="region" class="form-label">省份</label>
+              <select id="region" name="region" class="form-select">
+                {% for province in provinceList %}
+                <option value="{{ province }}">{{ province }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label for="region" class="form-label">城市</label>
+              <select id="city" name="city" class="form-select">
+                {% for city in cityList %}
+                <option value="{{ city }}" {% if city == filter_params.city %}selected{% endif %}>{{ city }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label for="score" class="form-label">最低评分</label>
+              <select id="score" name="score" class="form-select">
+                <option value="">全部评分</option>
+                <option value="3">3分及以上</option>
+                <option value="4">4分及以上</option>
+                <option value="4.5">4.5分及以上</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label for="level" class="form-label">景点等级</label>
+              <select id="level" name="level" class="form-select">
+                <option value="">全部等级</option>
+                <option value="5A">5A级</option>
+                <option value="4A">4A级</option>
+                <option value="3A">3A级</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-group mt-4">
+          <h6 class="filter-group-title">价格范围</h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="min_price" class="form-label">最低价格</label>
+              <input
+                type="number"
+                class="form-control"
+                id="min_price"
+                name="min_price"
+                min="0"
+                max="999"
+                step="10"
+                value=""
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="max_price" class="form-label">最高价格</label>
+              <input
+                type="number"
+                class="form-control"
+                id="max_price"
+                name="max_price"
+                min="1"
+                max="1000"
+                step="10"
+                value=""
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-actions mt-4 text-center">
+          <button type="submit" class="btn btn-primary me-2">
+            <i class="bi bi-funnel"></i> 筛选
+          </button>
+          <a
+            href="{% url 'recommendation' %}"
+            class="btn btn-outline-secondary"
+          >
+            <i class="bi bi-arrow-counterclockwise"></i> 重置
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- 景点展示区域 -->
+<section class="section dashboard">
+  <div class="row">
+    {% for travel in travelList %}
+    <div class="col-lg-4 col-md-6">
       <div class="card">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="card-title mb-0">景点筛选</h5>
-            <button class="btn btn-sm btn-outline-primary toggle-filters" type="button">
-              <i class="bi bi-chevron-down"></i>
-            </button>
+            <h5 class="card-title mb-0">
+              <a href="{{ travel.6 }}" target="_blank">{{ travel.1 }}</a>
+            </h5>
+            <span class="badge bg-primary">{{ travel.2 }}</span>
           </div>
           
-          <form method="get" class="filter-form">
-            <div class="filter-group">
-              <h6 class="filter-group-title">基本条件</h6>
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <label for="region" class="form-label">省份</label>
-                  <select id="region" name="region" class="form-select">
-                    {% for province in provinceList %}
-                    <option value="{{ province }}">{{ province }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                
-                <div class="col-md-4">
-                  <label for="region" class="form-label">城市</label>
-                  <select id="region" name="region" class="form-select">
-                    {% for city in cityList %}
-                    <option value="{{ city }}">{{ city }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-
-                <div class="col-md-4">
-                  <label for="score" class="form-label">最低评分</label>
-                  <select id="score" name="score" class="form-select">
-                    <option value="">全部评分</option>
-                    <option value="3">3分及以上</option>
-                    <option value="4">4分及以上</option>
-                    <option value="4.5">4.5分及以上</option>
-                  </select>
-                </div>
-                
-                <div class="col-md-4">
-                  <label for="level" class="form-label">景点等级</label>
-                  <select id="level" name="level" class="form-select">
-                    <option value="">全部等级</option>
-                    <option value="5A">5A级</option>
-                    <option value="4A">4A级</option>
-                    <option value="3A">3A级</option>
-                  </select>
-                </div>
-              </div>
+          <div class="text-center mb-3">
+            <img src="{{ travel.5 }}" alt="{{ travel.1 }}" class="img-fluid rounded" style="max-height: 200px;">
+          </div>
+          
+          <div class="d-flex justify-content-between">
+            <div>
+              <i class="bi bi-star-fill text-warning"></i>
+              <span>{{ travel.3 }}</span>
             </div>
-            
-            <div class="filter-group mt-4">
-              <h6 class="filter-group-title">价格范围</h6>
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label for="min_price" class="form-label">最低价格</label>
-                  <input type="number" class="form-control" id="min_price" name="min_price" 
-                         min="0" max="999" step="10"
-                         value="">
-                </div>
-                <div class="col-md-6">
-                  <label for="max_price" class="form-label">最高价格</label>
-                  <input type="number" class="form-control" id="max_price" name="max_price" 
-                         min="1" max="1000" step="10"
-                         value="">
-                </div>
-              </div>
+            <div>
+              <i class="bi bi-currency-yen"></i>
+              <span>{{ travel.4 }}</span>
             </div>
-            
-            <div class="filter-actions mt-4 text-center">
-              <button type="submit" class="btn btn-primary me-2">
-                <i class="bi bi-funnel"></i> 筛选
-              </button>
-              <a href="{% url 'recommendation' %}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-counterclockwise"></i> 重置
-              </a>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+    {% endfor %}
+  </div>
+</section>
 
+{% endblock %} {# 强制换行 #}
 
-{% endblock %}
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // 从URL参数中获取当前选择的省份和城市
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedProvince = urlParams.get('region') || '{{ filter_params.province|default:"" }}';
+    const selectedCity = urlParams.get('city') || '{{ filter_params.city|default:"" }}';
 
-{% block echarts%}
-    <script>
+    // 初始化省份选择
+    if (selectedProvince) {
+        $('#region').val(selectedProvince);
+    }
 
-    </script>
+    // 省份选择变化时加载对应城市
+    $('#region').change(function() {
+        const province = $(this).val();
+        if (!province) return;
+        
+        // 获取CSRF token
+        const csrftoken = $('[name=csrfmiddlewaretoken]').val();
+        
+        // 发送AJAX请求获取城市列表
+        $.ajax({
+            url: '/app/get_cities/',
+            type: 'GET',
+            data: { province: province },
+            headers: { 'X-CSRFToken': csrftoken },
+            success: function(response) {
+                const citySelect = $('#city');
+                citySelect.empty();
+                
+                // 添加城市选项
+                response.cities.forEach(function(city) {
+                    const option = $('<option></option>').val(city.name).text(city.name);
+                    if (city.name === selectedCity) {
+                        option.attr('selected', true);
+                    }
+                    citySelect.append(option);
+                });
+                
+                // 如果没有选中城市且城市列表不为空，默认选择第一个城市
+                if (!selectedCity && response.cities.length > 0) {
+                    citySelect.val(response.cities[0].name);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('获取城市列表失败:', error);
+            }
+        });
+    });
+    
+    // 初始化时触发一次省份变化事件
+    $('#region').trigger('change');
+
+    // 表单提交时保留所有筛选参数
+    $('form').submit(function(e) {
+        const form = $(this);
+        const url = new URL(form.attr('action'));
+        
+        // 添加所有表单参数到URL
+        form.find('input, select').each(function() {
+            if ($(this).attr('name') && $(this).val()) {
+                url.searchParams.set($(this).attr('name'), $(this).val());
+            }
+        });
+        
+        // 更新表单action并允许正常提交
+        form.attr('action', url.toString());
+    });
+});
+</script>
 {% endblock %}

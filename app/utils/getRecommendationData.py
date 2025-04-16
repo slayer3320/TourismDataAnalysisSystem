@@ -40,7 +40,16 @@ def getFilteredTravel(travelList=None, region=None, min_price=None, max_price=No
             
         filtered.append(travel)
     
-    return filtered
+    # 去重处理 - 相同省份、城市和名称的景点只保留一个
+    seen = set()
+    unique_filtered = []
+    for travel in filtered:
+        key = (travel.province, travel.city, travel.title)
+        if key not in seen:
+            seen.add(key)
+            unique_filtered.append(travel)
+    
+    return unique_filtered
 
 def getAllTravelByTitle(traveTitleList, region=None, min_price=None, max_price=None, score=None, level=None, types=None):
     resultList = []

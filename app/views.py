@@ -150,6 +150,11 @@ def cityChar(request):
     year, mon, day = getHomeData.getNowTime()
     cities, counts = getEchartsData.cityCharDataOne()
     resultData = getEchartsData.cityCharDataTwo()
+    # 获取各省份5A景点数量数据并预处理
+    province5AData = getEchartsData.provinceCharDataOne()
+    province_names = [item['name'] for item in province5AData]
+    province_names_json = str(province_names).replace("'", '"')
+    province5AData_json = str(province5AData).replace("'", '"')
     return render(request, 'cityChar.html', {
         'userInfo': userInfo,
         'nowTime': {
@@ -161,7 +166,9 @@ def cityChar(request):
             'cities': cities,
             'counts': counts
         },
-        'cityCharTwoData': resultData
+        'cityCharTwoData': resultData,
+        'province5AData_json': province5AData_json,
+        'province_names_json': province_names_json
     })
 
 def rateChar(request):
@@ -263,6 +270,41 @@ def recommendation(request):
     provinceList = getPublicData.getProvinceList()
     cityList = getPublicData.getCityList(provinceList[0]) if provinceList else []
 
+    # 获取各省份5A景点数量数据
+    province5AData = getEchartsData.provinceCharDataOne()
+
+    # 获取景点数据
+    travelList = []
+    if city:
+        travelList = check_tables.get_scenic_spots_list(city)
+        # 应用筛选条件
+        filteredList = []
+        for travel in travelList:
+            # 价格筛选
+            try:
+                price = float(travel[4])
+                if min_price is not None and price < min_price:
+                    continue
+                if max_price is not None and price > max_price:
+                    continue
+            except (ValueError, TypeError):
+                continue
+            
+            # 评分筛选
+            try:
+                travel_score = float(travel[3])
+                if score is not None and travel_score < float(score):
+                    continue
+            except (ValueError, TypeError):
+                continue
+            
+            # 等级筛选
+            if level and level not in travel[2]:
+                continue
+            
+            filteredList.append(travel)
+        travelList = filteredList
+    
     return render(request, 'recommendation.html', {
         'userInfo': userInfo,
         'nowTime': {
@@ -279,7 +321,9 @@ def recommendation(request):
             'score': score,
             'level': level
         },
-        'provinceList': provinceList
+        'provinceList': provinceList,
+        'province5AData': province5AData,
+        'travelList': travelList
     })
 
 def detailIntroCloud(request):
@@ -312,6 +356,8 @@ def citySidebarAnalysis(request):
     username = request.session.get('username')
     userInfo = User.objects.get(username=username)
     year, mon, day = getHomeData.getNowTime()
+    # 获取各省份5A景点数量数据
+    province5AData = getEchartsData.provinceCharDataOne()
     
     # 获取城市列表
     provinceList = getPublicData.getProvinceList()
@@ -372,9 +418,12 @@ def citySidebarAnalysis(request):
                 grade_weight = 0.3
                 
             # 标准化处理各指标
-            normalized_heat = (travel['heat'] or 0) / max_heat
-            normalized_comments = (travel['comments'] or 0) / max_comments
-            normalized_score = (travel['score'] or 0) / max_score
+            try:
+                normalized_heat = (float(travel['heat']) if travel['heat'] else 0) / float(max_heat)
+                normalized_comments = (float(travel['comments']) if travel['comments'] else 0) / float(max_comments)
+                normalized_score = (float(travel['score']) if travel['score'] else 0) / float(max_score)
+            except (ValueError, TypeError):
+                normalized_heat = normalized_comments = normalized_score = 0
             
             # 综合评分 = 热度*0.4 + 评论数*0.3 + 评分*0.2 + 等级*0.1
             composite_score = (
@@ -453,51 +502,41 @@ def citySidebarAnalysis(request):
         'commentCloudData': commentCloudData
     })
 
+from django.shortcuts import get_object_or_404
+
 def travelDetail(request, id):
     username = request.session.get('username')
     userInfo = User.objects.get(username=username)
     year, mon, day = getHomeData.getNowTime()
     
-    # 获取景点详细信息
-    travel = check_tables.get_scenic_spots_list_by_id(id)
-    travelList = [{
-        'id': travel[0],
-        'name': travel[1], 
-        'grade': travel[2], 
-        'score': travel[3], 
-        'ticket_price': travel[4],
-        'image_url': travel[5],
-        'address': travel[6],
-        'type': travel[7],
-        'intro': travel[8],
-        'heat': travel[9],
-        'comments': travel[10],
-    }]
-    
-    # 这里应该取列表中的第一个元素（字典）
-    travel_data = travelList[0]
-    
-    return render(request, 'travelDetail.html', {
-        'userInfo': userInfo,
-        'nowTime': {
-            'year': year,
-            'mon': getPublicData.monthList[mon - 1],
-            'day': day
-        },
-        'travel': {
-            'id': travel_data['id'],
-            'name': travel_data['name'],
-            'grade': travel_data['grade'],
-            'score': travel_data['score'],
-            'ticket_price': travel_data['ticket_price'],
-            'image_url': travel_data['image_url'],
-            'address': travel_data['address'],
-            'type': travel_data['type'],
-            'intro': travel_data['intro'],
-            'heat': travel_data['heat'],
-            'comments': travel_data['comments'],
-        }
-    })
+    try:
+        # 获取景点详细信息
+        travel = getAddCommentsData.getTravelById(id)
+        
+        # 获取景点评论数据
+        from app.utils.check_tables import get_scenic_reviews
+        reviews = get_scenic_reviews(id)
+        
+        return render(request, 'travelDetail.html', {
+            'userInfo': userInfo,
+            'nowTime': {
+                'year': year,
+                'mon': getPublicData.monthList[mon - 1],
+                'day': day
+            },
+            'travel': travel,
+            'reviews': reviews
+        })
+    except Exception as e:
+        return render(request, '404.html', {
+            'userInfo': userInfo,
+            'nowTime': {
+                'year': year,
+                'mon': getPublicData.monthList[mon - 1],
+                'day': day
+            },
+            'error': f'景点不存在或加载失败: {str(e)}'
+        })
 
 def ai_chat(request):
     return render(request, 'ai_chat.html')
@@ -546,6 +585,7 @@ def get_cities(request):
     province = request.GET.get('province')
     city_names = getPublicData.getCityList(province)
     city_list = [{'name': name} for name in city_names]
+    return JsonResponse({'cities': city_list})
 
 def debug_province_list(request):
     province_list = getPublicData.getProvinceList()

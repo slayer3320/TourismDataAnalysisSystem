@@ -1,6 +1,41 @@
 from app.utils import getPublicData
 import datetime
+import json
+import csv
+from pathlib import Path
 travelInfoList = getPublicData.getAllTravelInfoMapData()
+
+def provinceCharDataOne():
+    # Read city to province mapping
+    city_json_path = Path(__file__).parent / 'city.json'
+    with open(city_json_path, 'r', encoding='utf-8') as f:
+        city_to_province = json.load(f)
+    
+    # Read city sights data
+    csv_path = Path(__file__).parent / 'city_sights_counts_5A_4A.csv'
+    province_data = {}
+    
+    with open(csv_path, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            city = row['city']
+            count = int(row['sights_count_5A_4A'])
+            
+            # Map city to province
+            province = city_to_province.get(city)
+            if not province:
+                continue
+                
+            # Aggregate by province
+            if province not in province_data:
+                province_data[province] = 0
+            province_data[province] += count
+    
+    # Convert to list of dicts sorted by count
+    result = [{'name': k, 'value': v} for k, v in province_data.items()]
+    result.sort(key=lambda x: x['value'], reverse=True)
+    
+    return result
 
 def cityCharDataOne():
     import csv
