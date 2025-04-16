@@ -511,41 +511,26 @@ def travelDetail(request, id):
     year, mon, day = getHomeData.getNowTime()
     
     try:
-        # 获取景点详细信息
-        travel = getAddCommentsData.getTravelById(id)
-        
-        # 创建兼容模板的数据结构
-        travel_data = {
-            'name': travel.title,
-            'grade': travel.level,
-            'ticket_price': travel.price,
-            'score': travel.score,
-            'heat': travel.star,
-            'comments': travel.comments,
-            'address': travel.detailAddress,
-            'type': '',  # 模型中没有type字段
-            'intro': travel.detailIntro,
-            'image_url': travel.cover
-        }
-        
-        # 获取景点评论数据
+        # 直接从数据库获取景点详情
         from app.utils.check_tables import get_scenic_spots_list_by_id
         spot_data = get_scenic_spots_list_by_id(id)
         
-        # 如果从数据库获取到数据，优先使用数据库数据
-        if spot_data:
-            travel_data = {
-                'name': spot_data[1],  # name
-                'grade': spot_data[2],  # grade
-                'ticket_price': spot_data[4],  # ticket_price
-                'score': spot_data[3],  # score
-                'heat': spot_data[9],  # heat
-                'comments': spot_data[10],  # comments
-                'address': spot_data[6],  # address
-                'type': spot_data[7],  # type
-                'intro': spot_data[8],  # intro
-                'image_url': spot_data[5]  # image_url
-            }
+        if not spot_data:
+            raise Exception('景点不存在')
+            
+        travel_data = {
+            'id': spot_data[0],
+            'name': spot_data[1],
+            'grade': spot_data[2],
+            'score': spot_data[3],
+            'ticket_price': spot_data[4],
+            'image_url': spot_data[5],
+            'address': spot_data[6],
+            'type': spot_data[7],
+            'intro': spot_data[8],
+            'heat': spot_data[9],
+            'comments': spot_data[10]
+        }
         
         return render(request, 'travelDetail.html', {
             'userInfo': userInfo,
@@ -554,8 +539,7 @@ def travelDetail(request, id):
                 'mon': getPublicData.monthList[mon - 1],
                 'day': day
             },
-            'travel': travel_data,
-            'reviews': []
+            'travel': travel_data
         })
     except Exception as e:
         return render(request, '404.html', {
@@ -565,7 +549,7 @@ def travelDetail(request, id):
                 'mon': getPublicData.monthList[mon - 1],
                 'day': day
             },
-            'error': f'景点不存在或加载失败: {str(e)}'
+            'error': f'加载景点详情失败: {str(e)}'
         })
 
 def ai_chat(request):
