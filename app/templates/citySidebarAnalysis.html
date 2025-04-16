@@ -98,27 +98,18 @@
               });
             });
           </script>
-          <div class="row mb-3">
-            <div class="col-sm-12">
-              <div class="row align-items-center mb-3">
-                <div class="col-md-4">
-                  <div class="input-group mb-3">
-                    <span class="input-group-text">省份</span>
-                    <select id="provinceSelect" class="form-select">
-                      {% for province in provinceList %}
-                        <option value="{{ province }}">{{ province }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="input-group mb-3">
-                    <span class="input-group-text">城市/风景区</span>
-                    <select id="citySelect" name="city" class="form-select"></select>
-                  </div>
-                </div>
-              </div>
-              
+          <div class="city-selection-group">
+            <div class="input-group">
+              <span class="input-group-text">省份</span>
+              <select id="provinceSelect" class="form-select">
+                {% for province in provinceList %}
+                  <option value="{{ province }}">{{ province }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="input-group">
+              <span class="input-group-text">城市/风景区</span>
+              <select id="citySelect" name="city" class="form-select"></select>
             </div>
           </div>
           <div class="row mt-3">

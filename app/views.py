@@ -392,13 +392,36 @@ def citySidebarAnalysis(request):
         'comments': travel[10],
     } for travel in travelList]
     
+    # 将有图片的景点排在前面
+    travelList.sort(key=lambda x: 0 if x['image_url'] else 1, reverse=False)
+    
     # 获取星级占比数据
     starRatioData = check_tables.get_star_ratio(selectedCity)
     
-    # 获取价格分析数据
+    # 获取价格分析数据并按区间分组
     priceAnalysisData = check_tables.get_price_analysis(selectedCity)
-    priceAnalysisXData = [str(price) for price, _ in priceAnalysisData]
-    priceAnalysisYData = [count for _, count in priceAnalysisData]
+    
+    # 定义价格区间分组
+    price_ranges = [
+        (0, 50), (50, 100), (100, 150), (150, 200), 
+        (200, 300), (300, 500), (500, float('inf'))
+    ]
+    
+    # 初始化分组数据
+    price_groups = {f"{low}-{high if high != float('inf') else '+'}": 0 
+                   for low, high in price_ranges}
+    
+    # 统计每个价格区间的景点数量
+    for price, count in priceAnalysisData:
+        for low, high in price_ranges:
+            if low <= price < high:
+                range_key = f"{low}-{high if high != float('inf') else '+'}"
+                price_groups[range_key] += count
+                break
+    
+    # 转换为图表需要的数据格式
+    priceAnalysisXData = list(price_groups.keys())
+    priceAnalysisYData = list(price_groups.values())
     
     # 生成景点词云数据
     wordCloudData = []
