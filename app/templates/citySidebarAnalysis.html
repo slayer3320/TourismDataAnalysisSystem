@@ -1,441 +1,391 @@
 {% extends 'base.html' %}
-
-{% block title %}城市景点分析{% endblock %}
-
-{% block sidebar %}
-  {{ block.super }}
-{% endblock %}
-
-{% block content %}
-<div class="pagetitle" style="display: flex;align-items: center">
-  <div style="margin-right: auto; display: flex; align-items: center; gap: 10px">
-    <h1 style="margin: 0">城市景点分析</h1>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="#4154f1" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-    </svg>
-    <nav>
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
-        <li class="breadcrumb-item active">城市景点分析</li>
-      </ol>
-    </nav>
-  </div>
-  <h5 style="font-weight: normal">
-    {{ nowTime.year }} - {{ nowTime.mon }} - {{ nowTime.day }}
-  </h5>
-</div>
-
-<section class="section">
-  <div class="row">
-    <div class="col-lg-12">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">城市景点筛选</h5>
-          
-          <form method="get" class="filter-form">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label for="province" class="form-label">省份</label>
-                <select id="province" name="province" class="form-select">
-                  {% for province in provinceList %}
-                  <option value="{{ province }}" {% if province == filter_params.province %}selected{% endif %}>{{ province }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-
-              <div class="col-md-6">
-                <label for="city" class="form-label">城市/风景区</label>
-                <select id="city" name="city" class="form-select">
-                  {% if cityList %}
-                    {% for city in cityList %}
-                    <option value="{{ city }}" {% if city == filter_params.city %}selected{% endif %}>{{ city }}</option>
-                    {% endfor %}
-                  {% endif %}
-                </select>
-              </div>
-            </div>
-
-            <div class="filter-actions mt-4 text-center">
-              <button type="submit" class="btn btn-primary me-2">
-                <i class="bi bi-funnel"></i> 筛选
-              </button>
-              <a href="{% url 'citySidebarAnalysis' %}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-counterclockwise"></i> 重置
-              </a>
-            </div>
-          </form>
-
-          <script>
-            $(document).ready(function() {
-              const provinceSelect = $('#province');
-              const citySelect = $('#city');
-              
-              // 从URL参数获取省份和城市
-              const urlParams = new URLSearchParams(window.location.search);
-              const urlProvince = urlParams.get('province');
-              const urlCity = urlParams.get('city');
-              
-              // 省份选择变化时加载对应城市
-              provinceSelect.on('change', function() {
-                const province = $(this).val();
-                console.log('省份选择变化:', province);
-                
-                // 获取CSRF token
-                const csrftoken = $('[name=csrfmiddlewaretoken]').val();
-                
-                // 发送AJAX请求获取城市列表
-                $.ajax({
-                  url: '/app/get_cities/',
-                  type: 'GET',
-                  data: { province: province },
-                  headers: { 'X-CSRFToken': csrftoken },
-                  success: function(response) {
-                    console.log('获取城市列表成功:', response);
-                    citySelect.empty();
-                    
-                    // 添加城市选项
-                    if (response.cities && response.cities.length > 0) {
-                      response.cities.forEach(function(city) {
-                        const option = $('<option></option>').val(city.name).text(city.name);
-                        if (city.name === urlCity) {
-                          option.attr('selected', true);
-                        }
-                        citySelect.append(option);
-                      });
-                      
-                      // 如果没有选中城市，默认选择第一个城市
-                      if (!urlCity) {
-                        citySelect.val(response.cities[0].name);
-                      }
-                    } else {
-                      console.warn('该省份无城市数据');
-                      citySelect.append($('<option></option>').text('无城市数据'));
-                    }
-                  },
-                  error: function(xhr, status, error) {
-                    console.error('获取城市列表失败:', error);
-                    citySelect.empty().append($('<option></option>').text('加载失败'));
-                  }
-                });
-              });
-              
-              // 初始化时触发一次省份变化事件
-              if (urlProvince) {
-                provinceSelect.val(urlProvince).trigger('change');
-              } else if (provinceSelect.val()) {
-                provinceSelect.trigger('change');
-              }
-
-              // 表单提交时保留所有筛选参数
-              $('form').submit(function(e) {
-                const form = $(this);
-                const url = new URL(form.attr('action'));
-                
-                // 添加所有表单参数到URL
-                form.find('input, select').each(function() {
-                  const name = $(this).attr('name');
-                  const value = $(this).val();
-                  if (name && value) {
-                    url.searchParams.set(name, value);
-                  }
-                });
-
-                // 确保保留URL中已有的参数
-                const existingParams = new URLSearchParams(window.location.search);
-                for (const [key, value] of existingParams) {
-                  if (!url.searchParams.has(key)) {
-                    url.searchParams.set(key, value);
-                  }
-                }
-                
-                // 更新表单action并允许正常提交
-                form.attr('action', url.toString());
-              });
-
-              // 页面加载时从URL参数设置表单值
-              const params = new URLSearchParams(window.location.search);
-              params.forEach((value, key) => {
-                const element = $(`[name="${key}"]`);
-                if (element.length) {
-                  element.val(value);
-                }
-              });
-            });
-          </script>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="row">
-    <!-- 星级占比图表 -->
-    <div class="col-lg-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">{{ selectedCity }} 景点星级占比</h5>
-          <div id="starRatioChart" style="width:100%;height:400px"></div>
-          <div class="chart-description mt-3">
-            <h6>星级占比图说明：</h6>
-            <ul>
-              <li>图表展示{{ selectedCity }}各等级景点的数量占比</li>
-              <li>5A级：最高等级景区，代表国家级精品旅游景区</li>
-              <li>4A级：优秀等级景区，代表省级精品旅游景区</li>
-              <li>3A级：良好等级景区，代表市级优质旅游景区</li>
-              <li>其他：包括2A级及以下景区</li>
-              <li>扇形面积越大表示该等级景点数量越多</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 价格分析图表 -->
-    <div class="col-lg-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">{{ selectedCity }} 景点价格分析</h5>
-          <div id="priceAnalysisChart" style="width:100%;height:400px"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 词云图 -->
-  <div class="row">
-    <div class="col-lg-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">{{ selectedCity }} 景点词云</h5>
-          <div id="wordCloudChart" style="width:100%;height:400px"></div>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">{{ selectedCity }} 游客评价词云</h5>
-          <div id="commentCloudChart" style="width:100%;height:400px"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  
-  <!-- 景点列表 -->
-  <div class="row">
-    <div class="col-12">
-      <div class="card recent-sales overflow-auto">
-        <div class="card-body">
-          <h5 class="card-title">{{ selectedCity }} 景点列表</h5>
-
-              <table class="table table-borderless datatable">
-            <thead>
-              <tr>
-                <th style="width:100px" scope="col">图片</th>
-                <th scope="col">景区名</th>
-                <th style="width:100px" scope="col">景区等级</th>
-                <th style="width:100px" scope="col">景区评分</th>
-                <th style="width:100px" scope="col">价格</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for i in travelList %}
-                <tr onclick="window.location.href='/app/travelDetail/{{ i.id }}/'" style="cursor:pointer">
-                  <th scope="row">
-                    {% if i.image_url %}
-                      <img src="{{ i.image_url }}" style="width:80px;height:60px;object-fit:cover" alt="{{ i.name }}">
-                    {% else %}
-                      <span>无图片</span>
-                    {% endif %}
-                  </th>
-                  <td>{{ i.name }}</td>
-                  <td><a href="#" class="text-primary">{% if i.grade %}{{ i.grade }}{% else %}无评级{% endif %}</a></td>
-                  <td><span class="badge bg-success">{{ i.score }}分</span></td>
-                  <td><span class="text-danger">${{ i.ticket_price }}</span></td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-(function() {
-    // 等待所有资源加载完成
-    function initWordClouds() {
-        // 景点词云
-        try {
-            const wordCloudChart = echarts.init(document.getElementById('wordCloudChart'));
-            const wordCloudOption = {
-                title: {
-                    text: '景点词云 - 大小表示综合热度',
-                    left: 'center'
-                },
-                tooltip: {
-                    show: true,
-                    formatter: function(params) {
-                        return params.name + ': ' + params.value.toFixed(1);
-                    }
-                },
-                series: [{
-                    type: 'wordCloud',
-                    shape: 'circle',
-                    left: 'center',
-                    top: 'center',
-                    width: '90%',
-                    height: '90%',
-                    sizeRange: [20, 80],
-                    rotationRange: [-45, 45],
-                    rotationStep: 15,
-                    gridSize: 10,
-                    drawOutOfBound: false,
-                    textStyle: {
-                        fontFamily: 'Microsoft YaHei',
-                        fontWeight: 'bold',
-                        color: function () {
-                            return 'rgb(' + 
-                                Math.round(Math.random() * 155 + 100) + ',' + 
-                                Math.round(Math.random() * 155 + 100) + ',' + 
-                                Math.round(Math.random() * 155 + 100) + ')';
-                        }
-                    },
-                    emphasis: {
-                        textStyle: {
-                            shadowBlur: 10,
-                            shadowColor: '#333'
-                        }
-                    },
-                    data: {{ wordCloudData|safe }}
-                }]
-            };
-            
-            console.log('词云数据:', {{ wordCloudData|safe }});
-            
-            wordCloudChart.setOption(wordCloudOption);
-            
-            // 窗口大小变化时重绘
-            window.addEventListener('resize', function() {
-                wordCloudChart.resize();
-            });
-        } catch (error) {
-            console.error('景点词云初始化失败:', error);
-        }
-
-        // 评论词云初始化
-        try {
-            const commentCloudChart = echarts.init(document.getElementById('commentCloudChart'));
-            const commentCloudOption = {
-                title: {
-                    text: '游客评价词云',
-                    left: 'center'
-                },
-                series: [{
-                    type: 'wordCloud',
-                    data: {{ commentCloudData|safe }}
-                }]
-            };
-            commentCloudChart.setOption(commentCloudOption);
-        } catch (error) {
-            console.error('评论词云初始化失败:', error);
-        }
-    }
-
-    // 多种方式确保执行
-    if (document.readyState === 'complete') {
-        initWordClouds();
-    } else {
-        window.addEventListener('load', initWordClouds);
-        document.addEventListener('DOMContentLoaded', initWordClouds);
-    }
-})();
-</script>
-{% endblock %}
-
-{% block echarts %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-  // 星级占比图表
-  var starRatioChart = echarts.init(document.getElementById('starRatioChart'));
-  var starRatioOption = {
-    title: {
-      text: '景点星级占比',
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'item',
-      formatter: '{a} <br/>{b}: {c}个 ({d}%)'
-    },
-    legend: {
-      orient: 'vertical',
-      left: 'left'
-    },
-    series: [
-      {
-        name: '星级占比',
-        type: 'pie',
-        radius: '50%',
-        data: {{ starRatioData | safe }},
-        label: {
-          show: true,
-          formatter: '{b}: {d}%',
-          fontSize: 14,
-          fontWeight: 'bold'
-        },
-        labelLine: {
-          show: true,
-          length: 20,
-          length2: 30
-        },
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          },
-          label: {
-            show: true,
-            fontSize: 16
-          }
-        }
-      }
-    ]
-  };
-  starRatioChart.setOption(starRatioOption);
-  // 价格分析图表
-  var priceAnalysisChart = echarts.init(document.getElementById('priceAnalysisChart'));
-  var priceAnalysisOption = {
-    title: {
-      text: '景点价格分析',
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      }
-    },
-    xAxis: {
-      type: 'category',
-      data: {{ priceAnalysisXData | safe }}
-    },
-    yAxis: {
-      type: 'value'
-    },
-    series: [
-      {
-        name: '景点数量',
-        type: 'bar',
-        data: {{ priceAnalysisYData | safe }}
-      }
-    ]
-  };
-  priceAnalysisChart.setOption(priceAnalysisOption);
-</script>
-{% endblock %}
+ 
+ {% block title %}城市景点分析{% endblock %}
+ 
+ {% block sidebar %}
+   {{ block.super }}
+ {% endblock %}
+ 
+ {% block content %}
+ <div class="pagetitle" style="display: flex;align-items: center">
+   <div style="margin-right: auto; display: flex; align-items: center; gap: 10px">
+     <h1 style="margin: 0">城市景点分析</h1>
+     <svg width="24" height="24" viewBox="0 0 24 24" fill="#4154f1" xmlns="http://www.w3.org/2000/svg">
+       <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+     </svg>
+     <nav>
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+         <li class="breadcrumb-item active">城市景点分析</li>
+       </ol>
+     </nav>
+   </div>
+   <h5 style="font-weight: normal">
+     {{ nowTime.year }} - {{ nowTime.mon }} - {{ nowTime.day }}
+   </h5>
+ </div>
+ 
+ <section class="section">
+   <div class="row">
+     <div class="col-lg-12">
+       <div class="card">
+         <div class="card-body">
+           <h5 class="card-title">城市选择</h5>
+           <div class="alert alert-info mb-3" id="citySelectionAlert">
+             当前选择: <span id="currentProvince">{% if provinceList %}{{ provinceList.0 }}{% else %}{% endif %}</span> <span id="currentCity">{{ selectedCity }}</span>
+           </div>
+           <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+           <script>
+             $(document).ready(function() {
+               const provinceSelect = $('#provinceSelect');
+               const citySelect = $('#citySelect');
+ 
+               // 从localStorage获取保存的选择
+               const savedProvince = localStorage.getItem('selectedProvince');
+               const savedCity = localStorage.getItem('selectedCity');
+ 
+               // 设置省份选择
+               if (savedProvince) {
+                 provinceSelect.val(savedProvince);
+                 $('#currentProvince').text(savedProvince);
+               }
+               
+               // 省份选择变化时加载对应城市
+               provinceSelect.change(function() {
+                 const province = $(this).val();
+                 $('#currentProvince').text(province);
+ 
+                 // 获取CSRF token
+                 const csrftoken = $('[name=csrfmiddlewaretoken]').val();
+                 
+                 // 发送AJAX请求获取城市列表
+                 $.ajax({
+                   url: '/app/get_cities/',
+                   type: 'GET',
+                   data: { province: province },
+                   headers: { 'X-CSRFToken': csrftoken },
+                   success: function(response) {
+                     citySelect.empty();
+                     
+                     // 添加城市选项
+                     response.cities.forEach(function(city) {
+                       const option = $('<option></option>').val(city.name).text(city.name);
+                       if (city.name === savedCity) {
+                         option.attr('selected', true);
+                         $('#currentCity').text(city.name);
+                       }
+                       citySelect.append(option);
+                     });
+ 
+                     // 如果没有选中城市且城市列表不为空，默认选择第一个城市
+                     if (!savedCity && response.cities.length > 0) {
+                       citySelect.val(response.cities[0].name);
+                       $('#currentCity').text(response.cities[0].name);
+                     }
+                   },
+                   error: function(xhr, status, error) {
+                     console.error('获取城市列表失败:', error);
+                   }
+                 });
+               });
+               
+               // 初始化时触发一次省份变化事件
+               provinceSelect.trigger('change');
+ 
+               // 城市选择变化时更新显示
+               citySelect.change(function() {
+                 $('#currentCity').text($(this).val());
+               });
+             });
+           </script>
+           <div class="row mb-3">
+             <div class="col-sm-12">
+               <div class="row align-items-center mb-3">
+                 <div class="col-md-4">
+                   <div class="input-group mb-3">
+                     <span class="input-group-text">省份</span>
+                     <select id="provinceSelect" class="form-select">
+                       {% for province in provinceList %}
+                         <option value="{{ province }}">{{ province }}</option>
+                       {% endfor %}
+                     </select>
+                   </div>
+                 </div>
+                 <div class="col-md-4">
+                   <div class="input-group mb-3">
+                     <span class="input-group-text">城市/风景区</span>
+                     <select id="citySelect" name="city" class="form-select"></select>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
+           <div class="row mt-3">
+             <div class="col-12 text-center">
+               <button id="confirmCityBtn" class="btn btn-primary mx-auto" style="width: 120px;">确定</button>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+ 
+     <script>
+       document.getElementById('confirmCityBtn').addEventListener('click', function() {
+         const province = document.getElementById('provinceSelect').value;
+         const city = document.getElementById('citySelect').value;
+ 
+         // 保存选择到localStorage
+         localStorage.setItem('selectedProvince', province);
+         localStorage.setItem('selectedCity', city);
+ 
+         // 跳转到相应页面
+         window.location.href = `/app/citySidebarAnalysis?city=${encodeURIComponent(city)}`;
+       });
+     </script>
+   </div>
+ 
+ 
+   <div class="row">
+     <!-- 星级占比图表 -->
+     <div class="col-lg-6">
+       <div class="card">
+         <div class="card-body">
+           <h5 class="card-title">{{ selectedCity }} 景点星级占比</h5>
+           <div id="starRatioChart" style="width:100%;height:400px"></div>
+         </div>
+       </div>
+     </div>
+ 
+     <!-- 价格分析图表 -->
+     <div class="col-lg-6">
+       <div class="card">
+         <div class="card-body">
+           <h5 class="card-title">{{ selectedCity }} 景点价格分析</h5>
+           <div id="priceAnalysisChart" style="width:100%;height:400px"></div>
+         </div>
+       </div>
+     </div>
+   </div>
+ 
+   <!-- 词云图 -->
+   <div class="row">
+     <div class="col-lg-6">
+       <div class="card">
+         <div class="card-body">
+           <h5 class="card-title">{{ selectedCity }} 景点词云</h5>
+           <div id="wordCloudChart" style="width:100%;height:400px"></div>
+         </div>
+       </div>
+     </div>
+     <div class="col-lg-6">
+       <div class="card">
+         <div class="card-body">
+           <h5 class="card-title">{{ selectedCity }} 游客评价词云</h5>
+           <div id="commentCloudChart" style="width:100%;height:400px"></div>
+         </div>
+       </div>
+     </div>
+   </div>
+ 
+ 
+ 
+   <!-- 景点列表 -->
+   <div class="row">
+     <div class="col-12">
+       <div class="card recent-sales overflow-auto">
+         <div class="card-body">
+           <h5 class="card-title">{{ selectedCity }} 景点列表</h5>
+ 
+               <table class="table table-borderless datatable">
+             <thead>
+               <tr>
+                 <th style="width:100px" scope="col">图片</th>
+                 <th scope="col">景区名</th>
+                 <th style="width:100px" scope="col">景区等级</th>
+                 <th style="width:100px" scope="col">景区评分</th>
+                 <th style="width:100px" scope="col">价格</th>
+               </tr>
+             </thead>
+             <tbody>
+               {% for i in travelList %}
+                 <tr onclick="window.location.href='/app/travelDetail/{{ i.id }}/'" style="cursor:pointer">
+                   <th scope="row">
+                     {% if i.image_url %}
+                       <img src="{{ i.image_url }}" style="width:80px;height:60px;object-fit:cover" alt="{{ i.name }}">
+                     {% else %}
+                       <span>无图片</span>
+                     {% endif %}
+                   </th>
+                   <td>{{ i.name }}</td>
+                   <td><a href="#" class="text-primary">{% if i.grade %}{{ i.grade }}{% else %}无评级{% endif %}</a></td>
+                   <td><span class="badge bg-success">{{ i.score }}分</span></td>
+                   <td><span class="text-danger">${{ i.ticket_price }}</span></td>
+                 </tr>
+               {% endfor %}
+             </tbody>
+           </table>
+         </div>
+       </div>
+     </div>
+   </div>
+ </section>
+ {% endblock %}
+ 
+ {% block extra_js %}
+ <script>
+ (function() {
+     // 等待所有资源加载完成
+     function initWordClouds() {
+         // 景点词云
+         try {
+             const wordCloudChart = echarts.init(document.getElementById('wordCloudChart'));
+             const wordCloudOption = {
+                 title: {
+                     text: '景点词云 - 大小表示综合热度',
+                     left: 'center'
+                 },
+                 tooltip: {
+                     show: true,
+                     formatter: function(params) {
+                         return params.name + ': ' + params.value.toFixed(1);
+                     }
+                 },
+                 series: [{
+                     type: 'wordCloud',
+                     shape: 'circle',
+                     left: 'center',
+                     top: 'center',
+                     width: '90%',
+                     height: '90%',
+                     sizeRange: [20, 80],
+                     rotationRange: [-45, 45],
+                     rotationStep: 15,
+                     gridSize: 10,
+                     drawOutOfBound: false,
+                     textStyle: {
+                         fontFamily: 'Microsoft YaHei',
+                         fontWeight: 'bold',
+                         color: function () {
+                             return 'rgb(' + 
+                                 Math.round(Math.random() * 155 + 100) + ',' + 
+                                 Math.round(Math.random() * 155 + 100) + ',' + 
+                                 Math.round(Math.random() * 155 + 100) + ')';
+                         }
+                     },
+                     emphasis: {
+                         textStyle: {
+                             shadowBlur: 10,
+                             shadowColor: '#333'
+                         }
+                     },
+                     data: {{ wordCloudData|safe }}
+                 }]
+             };
+ 
+             console.log('词云数据:', {{ wordCloudData|safe }});
+ 
+             wordCloudChart.setOption(wordCloudOption);
+ 
+             // 窗口大小变化时重绘
+             window.addEventListener('resize', function() {
+                 wordCloudChart.resize();
+             });
+         } catch (error) {
+             console.error('景点词云初始化失败:', error);
+         }
+ 
+         // 评论词云初始化
+         try {
+             const commentCloudChart = echarts.init(document.getElementById('commentCloudChart'));
+             const commentCloudOption = {
+                 title: {
+                     text: '游客评价词云',
+                     left: 'center'
+                 },
+                 series: [{
+                     type: 'wordCloud',
+                     data: {{ commentCloudData|safe }}
+                 }]
+             };
+             commentCloudChart.setOption(commentCloudOption);
+         } catch (error) {
+             console.error('评论词云初始化失败:', error);
+         }
+     }
+ 
+     // 多种方式确保执行
+     if (document.readyState === 'complete') {
+         initWordClouds();
+     } else {
+         window.addEventListener('load', initWordClouds);
+         document.addEventListener('DOMContentLoaded', initWordClouds);
+     }
+ })();
+ </script>
+ {% endblock %}
+ 
+ {% block echarts %}
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script>
+   // 星级占比图表
+   var starRatioChart = echarts.init(document.getElementById('starRatioChart'));
+   var starRatioOption = {
+     title: {
+       text: '景点星级占比',
+       left: 'center'
+     },
+     tooltip: {
+       trigger: 'item'
+     },
+     legend: {
+       orient: 'vertical',
+       left: 'left'
+     },
+     series: [
+       {
+         name: '星级占比',
+         type: 'pie',
+         radius: '50%',
+         data: {{ starRatioData | safe }},
+         emphasis: {
+           itemStyle: {
+             shadowBlur: 10,
+             shadowOffsetX: 0,
+             shadowColor: 'rgba(0, 0, 0, 0.5)'
+           }
+         }
+       }
+     ]
+   };
+   starRatioChart.setOption(starRatioOption);
+   // 价格分析图表
+   var priceAnalysisChart = echarts.init(document.getElementById('priceAnalysisChart'));
+   var priceAnalysisOption = {
+     title: {
+       text: '景点价格分析',
+       left: 'center'
+     },
+     tooltip: {
+       trigger: 'axis',
+       axisPointer: {
+         type: 'shadow'
+       }
+     },
+     xAxis: {
+       type: 'category',
+       data: {{ priceAnalysisXData | safe }}
+     },
+     yAxis: {
+       type: 'value'
+     },
+     series: [
+       {
+         name: '景点数量',
+         type: 'bar',
+         data: {{ priceAnalysisYData | safe }}
+       }
+     ]
+   };
+   priceAnalysisChart.setOption(priceAnalysisOption);
+ </script>
+ {% endblock %}
