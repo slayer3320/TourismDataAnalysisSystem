@@ -7,7 +7,7 @@ import os
 import pandas as pd
 import time
 import django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE','去哪儿旅游数据分析推荐系统.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE','SightSeek旅游数据分析推荐系统.settings')
 django.setup()
 from app.models import TravelInfo
 

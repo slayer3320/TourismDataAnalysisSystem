@@ -6,7 +6,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', '去哪儿旅游数据分析推荐系统.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'SightSeek旅游数据分析推荐系统.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

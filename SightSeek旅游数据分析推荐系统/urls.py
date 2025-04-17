@@ -1,5 +1,5 @@
 """
-URL configuration for 去哪儿旅游数据分析推荐系统 project.
+URL configuration for SightSeek旅游数据分析推荐系统 project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/

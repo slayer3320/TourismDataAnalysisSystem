@@ -1,5 +1,5 @@
 """
-WSGI config for 去哪儿旅游数据分析推荐系统 project.
+WSGI config for SightSeek旅游数据分析推荐系统 project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', '去哪儿旅游数据分析推荐系统.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'SightSeek旅游数据分析推荐系统.settings')
 
 application = get_wsgi_application()
