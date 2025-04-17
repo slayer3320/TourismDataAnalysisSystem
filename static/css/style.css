@@ -6,24 +6,29 @@
 */
 
 /*--------------------------------------------------------------
-# General
+# 通用样式 (General)
 --------------------------------------------------------------*/
+/* 基础全局样式设置 */
 :root {
+  /* 启用平滑滚动效果 */
   scroll-behavior: smooth;
 }
 
 body {
+  /* 设置全局字体、背景色和文字颜色 */
   font-family: "Open Sans", sans-serif;
-  background: #f6f9ff;
-  color: #444444;
+  background: #f6f9ff;  /* 浅蓝色背景 */
+  color: #444444;      /* 深灰色文字 */
 }
 
 a {
+  /* 链接基础样式 - 蓝色无下划线 */
   color: #4154f1;
   text-decoration: none;
 }
 
 a:hover {
+  /* 链接悬停效果 - 更浅的蓝色 */
   color: #717ff5;
   text-decoration: none;
 }
@@ -34,16 +39,19 @@ h3,
 h4,
 h5,
 h6 {
+  /* 标题使用不同字体 */
   font-family: "Nunito", sans-serif;
 }
 
 /*--------------------------------------------------------------
-# Main
+# 主内容区域 (Main)
 --------------------------------------------------------------*/
+/* 页面主要内容容器样式 */
 #main {
-  margin-top: 60px;
-  padding: 20px 30px;
-  transition: all 0.3s;
+  /* 主内容区域布局 */
+  margin-top: 60px;    /* 顶部留出导航栏空间 */
+  padding: 20px 30px;  /* 内边距 */
+  transition: all 0.3s; /* 平滑过渡效果 */
 }
 @media (max-width: 1199px) {
   #main {
@@ -52,233 +60,281 @@ h6 {
 }
 
 /*--------------------------------------------------------------
-# Page Title
+# 页面标题 (Page Title)
 --------------------------------------------------------------*/
+/* 页面标题区域样式 */
 .pagetitle {
-  margin-bottom: 10px;
+  /* 页面标题容器 */
+  margin-bottom: 10px;  /* 底部间距 */
 }
 .pagetitle h1 {
-  font-size: 24px;
-  margin-bottom: 0;
-  font-weight: 600;
-  color: #012970;
+  /* 页面主标题样式 */
+  font-size: 24px;     /* 字体大小 */
+  margin-bottom: 0;    /* 去除默认底部边距 */
+  font-weight: 600;    /* 中等加粗 */
+  color: #012970;      /* 深蓝色 */
 }
 
 /*--------------------------------------------------------------
-# Back to top button
+# 返回顶部按钮 (Back to top button)
 --------------------------------------------------------------*/
+/* 固定在右下角的返回顶部按钮样式 */
 .back-to-top {
-  position: fixed;
-  visibility: hidden;
-  opacity: 0;
-  right: 15px;
-  bottom: 15px;
-  z-index: 99999;
-  background: #4154f1;
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  transition: all 0.4s;
+  /* 返回顶部按钮基础样式 */
+  position: fixed;     /* 固定定位 */
+  visibility: hidden;  /* 初始隐藏 */
+  opacity: 0;          /* 初始透明 */
+  right: 15px;         /* 距离右侧15px */
+  bottom: 15px;        /* 距离底部15px */
+  z-index: 99999;      /* 确保在最上层 */
+  background: #4154f1; /* 蓝色背景 */
+  width: 40px;         /* 宽度 */
+  height: 40px;        /* 高度 */
+  border-radius: 4px;  /* 圆角 */
+  transition: all 0.4s; /* 过渡动画 */
 }
+/* 返回顶部按钮图标样式 */
 .back-to-top i {
-  font-size: 24px;
-  color: #fff;
-  line-height: 0;
+  font-size: 24px;    /* 图标大小 */
+  color: #fff;       /* 白色图标 */
+  line-height: 0;    /* 去除行高影响 */
 }
+
+/* 返回顶部按钮悬停效果 */
 .back-to-top:hover {
-  background: #6776f4;
-  color: #fff;
+  background: #6776f4;  /* 悬停时背景色变浅 */
+  color: #fff;          /* 保持白色文字 */
 }
+
+/* 返回顶部按钮激活状态(显示时) */
 .back-to-top.active {
-  visibility: visible;
-  opacity: 1;
+  visibility: visible;  /* 显示按钮 */
+  opacity: 1;           /* 完全不透明 */
 }
 
 /*--------------------------------------------------------------
-# Override some default Bootstrap stylings
+# Bootstrap样式覆盖 (Override some default Bootstrap stylings)
 --------------------------------------------------------------*/
-/* Dropdown menus */
+/* 自定义修改Bootstrap默认样式 */
+
+/* 下拉菜单整体样式 (Dropdown menus) */
 .dropdown-menu {
-  border-radius: 4px;
-  padding: 10px 0;
-  -webkit-animation-name: dropdown-animate;
+  border-radius: 4px;   /* 圆角边框 */
+  padding: 10px 0;      /* 上下内边距 */
+  -webkit-animation-name: dropdown-animate;  /* 动画名称 */
   animation-name: dropdown-animate;
-  -webkit-animation-duration: 0.2s;
+  -webkit-animation-duration: 0.2s;  /* 动画时长0.2秒 */
   animation-duration: 0.2s;
-  -webkit-animation-fill-mode: both;
+  -webkit-animation-fill-mode: both; /* 动画填充模式 */
   animation-fill-mode: both;
-  border: 0;
-  box-shadow: 0 5px 30px 0 rgba(82, 63, 105, 0.2);
+  border: 0;           /* 无边框 */
+  box-shadow: 0 5px 30px 0 rgba(82, 63, 105, 0.2); /* 阴影效果 */
 }
+
+/* 下拉菜单头部和底部样式 */
 .dropdown-menu .dropdown-header,
 .dropdown-menu .dropdown-footer {
-  text-align: center;
-  font-size: 15px;
-  padding: 10px 25px;
-}
-.dropdown-menu .dropdown-footer a {
-  color: #444444;
-  text-decoration: underline;
-}
-.dropdown-menu .dropdown-footer a:hover {
-  text-decoration: none;
-}
-.dropdown-menu .dropdown-divider {
-  color: #a5c5fe;
-  margin: 0;
-}
-.dropdown-menu .dropdown-item {
-  font-size: 14px;
-  padding: 10px 15px;
-  transition: 0.3s;
-}
-.dropdown-menu .dropdown-item i {
-  margin-right: 10px;
-  font-size: 18px;
-  line-height: 0;
-}
-.dropdown-menu .dropdown-item:hover {
-  background-color: #f6f9ff;
+  text-align: center;  /* 文字居中 */
+  font-size: 15px;     /* 字体大小 */
+  padding: 10px 25px;  /* 内边距 */
 }
 
+/* 下拉菜单底部链接样式 */
+.dropdown-menu .dropdown-footer a {
+  color: #444444;      /* 深灰色文字 */
+  text-decoration: underline; /* 下划线 */
+}
+
+/* 下拉菜单底部链接悬停效果 */
+.dropdown-menu .dropdown-footer a:hover {
+  text-decoration: none; /* 悬停时去除下划线 */
+}
+
+/* 下拉菜单分隔线样式 */
+.dropdown-menu .dropdown-divider {
+  color: #a5c5fe;      /* 浅蓝色分隔线 */
+  margin: 0;           /* 无外边距 */
+}
+
+/* 下拉菜单项基础样式 */
+.dropdown-menu .dropdown-item {
+  font-size: 14px;     /* 字体大小 */
+  padding: 10px 15px;  /* 内边距 */
+  transition: 0.3s;    /* 过渡效果 */
+}
+
+/* 下拉菜单项图标样式 */
+.dropdown-menu .dropdown-item i {
+  margin-right: 10px;  /* 图标右边距 */
+  font-size: 18px;     /* 图标大小 */
+  line-height: 0;      /* 去除行高影响 */
+}
+
+/* 下拉菜单项悬停效果 */
+.dropdown-menu .dropdown-item:hover {
+  background-color: #f6f9ff; /* 浅蓝色背景 */
+}
+
+/* 中等屏幕以上(≥768px)的下拉菜单箭头样式 */
 @media (min-width: 768px) {
   .dropdown-menu-arrow::before {
-    content: "";
-    width: 13px;
-    height: 13px;
-    background: #fff;
-    position: absolute;
-    top: -7px;
-    right: 20px;
-    transform: rotate(45deg);
-    border-top: 1px solid #eaedf1;
-    border-left: 1px solid #eaedf1;
+    content: "";       /* 伪元素内容 */
+    width: 13px;       /* 宽度 */
+    height: 13px;      /* 高度 */
+    background: #fff;  /* 白色背景 */
+    position: absolute; /* 绝对定位 */
+    top: -7px;         /* 向上偏移 */
+    right: 20px;       /* 距离右侧20px */
+    transform: rotate(45deg); /* 旋转45度 */
+    border-top: 1px solid #eaedf1; /* 顶部边框 */
+    border-left: 1px solid #eaedf1; /* 左侧边框 */
   }
 }
+/* 下拉菜单动画效果 (Dropdown animation) */
 @-webkit-keyframes dropdown-animate {
   0% {
-    opacity: 0;
+    opacity: 0;  /* 初始完全透明 */
   }
   100% {
-    opacity: 1;
+    opacity: 1;  /* 完全不透明 */
   }
   0% {
-    opacity: 0;
+    opacity: 0;  /* 重置为透明 */
   }
 }
 @keyframes dropdown-animate {
   0% {
-    opacity: 0;
+    opacity: 0;  /* 初始完全透明 */
   }
   100% {
-    opacity: 1;
+    opacity: 1;  /* 完全不透明 */
   }
   0% {
-    opacity: 0;
+    opacity: 0;  /* 重置为透明 */
   }
 }
-/* Light Backgrounds */
+
+/*--------------------------------------------------------------
+# 轻量背景色 (Light Backgrounds)
+--------------------------------------------------------------*/
+/* 用于卡片、提示框等组件的浅色背景 */
+
+/* 主色浅背景 */
 .bg-primary-light {
-  background-color: #cfe2ff;
-  border-color: #cfe2ff;
+  background-color: #cfe2ff;  /* 浅蓝色背景 */
+  border-color: #cfe2ff;     /* 边框颜色 */
 }
 
+/* 次要色浅背景 */ 
 .bg-secondary-light {
-  background-color: #e2e3e5;
-  border-color: #e2e3e5;
+  background-color: #e2e3e5;  /* 浅灰色背景 */
+  border-color: #e2e3e5;      /* 边框颜色 */
 }
 
+/* 成功色浅背景 */
 .bg-success-light {
-  background-color: #d1e7dd;
-  border-color: #d1e7dd;
+  background-color: #d1e7dd;  /* 浅绿色背景 */
+  border-color: #d1e7dd;      /* 边框颜色 */
 }
 
+/* 危险色浅背景 */
 .bg-danger-light {
-  background-color: #f8d7da;
-  border-color: #f8d7da;
+  background-color: #f8d7da;  /* 浅红色背景 */
+  border-color: #f8d7da;      /* 边框颜色 */
 }
 
+/* 警告色浅背景 */
 .bg-warning-light {
-  background-color: #fff3cd;
-  border-color: #fff3cd;
+  background-color: #fff3cd;  /* 浅黄色背景 */
+  border-color: #fff3cd;      /* 边框颜色 */
 }
 
+/* 信息色浅背景 */
 .bg-info-light {
-  background-color: #cff4fc;
-  border-color: #cff4fc;
+  background-color: #cff4fc;  /* 浅青色背景 */
+  border-color: #cff4fc;      /* 边框颜色 */
 }
 
+/* 深色浅背景 */
 .bg-dark-light {
-  background-color: #d3d3d4;
-  border-color: #d3d3d4;
+  background-color: #d3d3d4;  /* 浅灰色背景 */
+  border-color: #d3d3d4;      /* 边框颜色 */
 }
 
-/* Card */
+/*--------------------------------------------------------------
+# 卡片组件 (Card)
+--------------------------------------------------------------*/
+/* 基础卡片样式 */
 .card {
-  margin-bottom: 30px;
-  border: none;
-  border-radius: 5px;
-  box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
-  transition: all 0.3s ease;
+  margin-bottom: 30px;       /* 底部间距 */
+  border: none;              /* 无边框 */
+  border-radius: 5px;        /* 圆角 */
+  box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1); /* 阴影效果 */
+  transition: all 0.3s ease; /* 过渡动画 */
 }
 
-/* 景点卡片悬停效果 */
+/* 景点卡片悬停效果 (Scenic spot card hover effect) */
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(1, 41, 112, 0.2);
+  transform: translateY(-5px);  /* 上移5px */
+  box-shadow: 0 10px 20px rgba(1, 41, 112, 0.2); /* 增强阴影 */
 }
 
-/* 景点图片容器 */
+/* 景点图片容器 (Scenic spot image container) */
 .card-img-container {
-  height: 200px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 200px;            /* 固定高度 */
+  overflow: hidden;         /* 溢出隐藏 */
+  display: flex;            /* 弹性布局 */
+  align-items: center;      /* 垂直居中 */
+  justify-content: center;  /* 水平居中 */
 }
 
-/* 景点图片 */
+/* 景点图片样式 (Scenic spot image) */
 .card-img-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
+  width: 100%;             /* 宽度100% */
+  height: 100%;            /* 高度100% */
+  object-fit: cover;       /* 填充模式 */
+  transition: transform 0.3s ease; /* 缩放过渡 */
 }
 
+/* 卡片悬停时图片放大效果 */
 .card:hover .card-img-container img {
-  transform: scale(1.05);
+  transform: scale(1.05);  /* 放大5% */
 }
 
-/* 评分样式 */
+/* 评分徽章样式 (Rating badge) */
 .rating-badge {
-  display: inline-flex;
-  align-items: center;
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
-  padding: 4px 8px;
-  border-radius: 20px;
-  font-weight: 600;
+  display: inline-flex;     /* 内联弹性布局 */
+  align-items: center;      /* 垂直居中 */
+  background: rgba(255, 193, 7, 0.2); /* 半透明黄色背景 */
+  color: #ffc107;           /* 金色文字 */
+  padding: 4px 8px;         /* 内边距 */
+  border-radius: 20px;      /* 圆角 */
+  font-weight: 600;         /* 加粗 */
 }
 
-/* 价格样式 */
+/* 价格徽章样式 (Price badge) */
 .price-badge {
-  display: inline-flex;
-  align-items: center;
-  background: rgba(40, 167, 69, 0.2);
-  color: #28a745;
-  padding: 4px 8px;
-  border-radius: 20px;
-  font-weight: 600;
+  display: inline-flex;     /* 内联弹性布局 */
+  align-items: center;      /* 垂直居中 */
+  background: rgba(40, 167, 69, 0.2); /* 半透明绿色背景 */
+  color: #28a745;           /* 绿色文字 */
+  padding: 4px 8px;         /* 内边距 */
+  border-radius: 20px;      /* 圆角 */
+  font-weight: 600;         /* 加粗 */
 }
 
-/* 加载动画 */
+/*--------------------------------------------------------------
+# 淡入动画 (Fade-in animation)
+--------------------------------------------------------------*/
+/* 卡片淡入效果 */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; }  /* 从透明开始 */
+  to { opacity: 1; }    /* 到完全不透明 */
 }
 
+/* 旅游卡片应用淡入动画 */
 .travel-card {
-  animation: fadeIn 0.5s ease forwards;
+  animation: fadeIn 0.5s ease forwards; /* 0.5秒淡入效果 */
 }
 
 .card-header,
@@ -396,8 +452,9 @@ h6 {
 }
 
 /*--------------------------------------------------------------
-# Header
+# 顶部导航栏 (Header)
 --------------------------------------------------------------*/
+/* 页面顶部导航栏样式 */
 .logo {
   line-height: 1;
 }
@@ -487,8 +544,9 @@ h6 {
 }
 
 /*--------------------------------------------------------------
-# Header Nav
+# 顶部导航菜单 (Header Nav)
 --------------------------------------------------------------*/
+/* 顶部导航菜单项样式 */
 .header-nav ul {
   list-style: none;
 }
@@ -593,8 +651,9 @@ h6 {
 }
 
 /*--------------------------------------------------------------
-# Sidebar
+# 侧边栏 (Sidebar)
 --------------------------------------------------------------*/
+/* 左侧边栏导航样式 */
 .sidebar {
   position: fixed;
   top: 60px;
@@ -852,9 +911,10 @@ h6 {
 }
 
 /*--------------------------------------------------------------
-# Dashboard
+# 仪表盘 (Dashboard)
 --------------------------------------------------------------*/
-/* Enhanced City Selection Styles */
+/* 仪表盘页面专用样式 */
+/* 城市选择器增强样式 (Enhanced City Selection Styles) */
 .city-selection-container {
   padding: 20px;
   background: #fff;
@@ -1491,8 +1551,9 @@ h6 {
 }
 
 /*--------------------------------------------------------------
-# Footer
+# 页脚 (Footer)
 --------------------------------------------------------------*/
+/* 页面底部区域样式 */
 .footer {
   padding: 20px 0;
   font-size: 14px;
@@ -1511,8 +1572,9 @@ h6 {
 }
 
 /*--------------------------------------------------------------
-# Travel Detail Page
+# 旅游详情页 (Travel Detail Page)
 --------------------------------------------------------------*/
+/* 旅游景点详情页面专用样式 */
 .travel-detail-container {
   max-width: 1200px;
   margin: 0 auto;

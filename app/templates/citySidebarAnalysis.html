@@ -1,52 +1,103 @@
+{# 
+城市景点分析主页面模板
+功能：展示城市景点数据分析结果，包括星级占比、价格分析、词云图和景点列表
+继承关系：继承自base.html基础模板，保持整体布局一致
+#}
 {% extends 'base.html' %}
  
- {% block title %}城市景点分析{% endblock %}
+{# 
+页面标题区块
+设置浏览器标签页显示的标题为"城市景点分析"
+#}
+{% block title %}城市景点分析{% endblock %}
  
- {% block sidebar %}
+{# 
+侧边栏区块
+继承父模板的侧边栏内容，保持导航一致性
+使用block.super保留父模板中的原有内容
+#}
+{% block sidebar %}
    {{ block.super }}
- {% endblock %}
+{% endblock %}
  
- {% block content %}
- <div class="pagetitle" style="display: flex;align-items: center">
+{# 
+主要内容区块
+包含城市选择、数据分析图表和景点列表等核心内容
+#}
+{% block content %}
+{# 
+页面标题区域
+包含主标题、定位图标、面包屑导航和当前日期
+采用flex布局实现元素对齐和间距控制
+#}
+<div class="pagetitle" style="display: flex;align-items: center">
+   {# 左侧区域：主标题+面包屑导航 #}
    <div style="margin-right: auto; display: flex; align-items: center; gap: 10px">
+     {# 主标题 #}
      <h1 style="margin: 0">城市景点分析</h1>
+     
+     {# 定位图标 - SVG格式，使用#4154f1蓝色填充 #}
      <svg width="24" height="24" viewBox="0 0 24 24" fill="#4154f1" xmlns="http://www.w3.org/2000/svg">
        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
      </svg>
+     
+     {# 面包屑导航 - 显示当前位置层级 #}
      <nav>
        <ol class="breadcrumb">
+         {# 首页链接 #}
          <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+         {# 当前页标识 #}
          <li class="breadcrumb-item active">城市景点分析</li>
        </ol>
      </nav>
    </div>
+   
+   {# 右侧区域：当前日期显示 #}
    <h5 style="font-weight: normal">
+     {# 使用模板变量显示年月日 #}
      {{ nowTime.year }} - {{ nowTime.mon }} - {{ nowTime.day }}
    </h5>
- </div>
+</div>
  
- <section class="section">
+{# 
+主内容区域
+使用Bootstrap的section和row布局系统
+#}
+<section class="section">
+   {# 第一行：城市选择卡片 #}
    <div class="row">
      <div class="col-lg-12">
+       {# 卡片容器 #}
        <div class="card">
          <div class="card-body">
+           {# 城市选择区域 #}
            <div class="city-selection-container">
+             {# 城市选择标题区域 #}
              <div class="city-selection-title">
+               {# 定位图标 #}
                <svg width="24" height="24" viewBox="0 0 24 24" fill="#4154f1" xmlns="http://www.w3.org/2000/svg">
                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                </svg>
                <span>城市选择</span>
              </div>
+             
+             {# 当前选择提示框 #}
              <div class="alert alert-info mb-3" id="citySelectionAlert">
-             当前选择: <span id="currentProvince">{% if provinceList %}{{ provinceList.0 }}{% else %}{% endif %}</span> <span id="currentCity">{{ selectedCity }}</span>
-           </div>
-           <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-           <script>
-             $(document).ready(function() {
+               {# 显示当前选择的省份和城市 #}
+               当前选择: 
+               <span id="currentProvince">{% if provinceList %}{{ provinceList.0 }}{% else %}{% endif %}</span> 
+               <span id="currentCity">{{ selectedCity }}</span>
+             </div>
+ {# 引入jQuery库 #}
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ {# 城市选择相关JavaScript逻辑 #}
+ <script>
+   // 页面加载完成后初始化城市选择功能
+   $(document).ready(function() {
                const provinceSelect = $('#provinceSelect');
                const citySelect = $('#citySelect');
  
-               // 从localStorage获取保存的选择
+       // 从本地存储(localStorage)获取上次选择的省份和城市
                const savedProvince = localStorage.getItem('selectedProvince');
                const savedCity = localStorage.getItem('selectedCity');
  
@@ -56,7 +107,7 @@
                  $('#currentProvince').text(savedProvince);
                }
                
-               // 省份选择变化时加载对应城市
+       // 省份选择变化事件 - 加载对应城市列表
                provinceSelect.change(function() {
                  const province = $(this).val();
                  $('#currentProvince').text(province);
@@ -64,7 +115,7 @@
                  // 获取CSRF token
                  const csrftoken = $('[name=csrfmiddlewaretoken]').val();
                  
-                 // 发送AJAX请求获取城市列表
+       // 发送AJAX请求到后端获取城市列表数据
                  $.ajax({
                    url: '/app/get_cities/',
                    type: 'GET',
@@ -98,12 +149,12 @@
                // 初始化时触发一次省份变化事件
                provinceSelect.trigger('change');
  
-               // 城市选择变化时更新显示
+       // 城市选择变化事件 - 更新当前选择显示
                citySelect.change(function() {
                  $('#currentCity').text($(this).val());
                });
 
-               // 添加搜索功能
+       // 初始化Select2插件 - 为城市选择添加搜索功能
                $('#citySelect').select2({
                  placeholder: "搜索城市/风景区",
                  allowClear: true,
@@ -115,12 +166,12 @@
                  }
                });
 
-               // 省份变化时显示加载状态
+       // 省份变化时显示加载动画
                provinceSelect.change(function() {
                  $('#cityLoading').show();
                });
 
-               // AJAX请求完成后隐藏加载状态
+       // AJAX请求完成后隐藏加载动画
                $(document).ajaxComplete(function() {
                  $('#cityLoading').hide();
                });
@@ -158,16 +209,17 @@
        </div>
      </div>
  
-     <script>
+ {# 确定按钮点击事件处理 #}
+ <script>
        document.getElementById('confirmCityBtn').addEventListener('click', function() {
          const province = document.getElementById('provinceSelect').value;
          const city = document.getElementById('citySelect').value;
  
-         // 保存选择到localStorage
+       // 将选择的省份和城市保存到本地存储
          localStorage.setItem('selectedProvince', province);
          localStorage.setItem('selectedCity', city);
  
-         // 跳转到相应页面
+       // 跳转到带城市参数的景点分析页面
          window.location.href = `/app/citySidebarAnalysis?city=${encodeURIComponent(city)}`;
        });
      </script>
@@ -260,12 +312,14 @@
  </section>
  {% endblock %}
  
+ {# 额外JavaScript区块 - 主要用于词云图表初始化 #}
  {% block extra_js %}
+ {# 词云图表初始化脚本 #}
  <script>
  (function() {
-     // 等待所有资源加载完成
+     // 等待页面所有资源加载完成后初始化词云图表
      function initWordClouds() {
-         // 景点词云
+         // 初始化景点词云图表
          try {
              const wordCloudChart = echarts.init(document.getElementById('wordCloudChart'));
              const wordCloudOption = {
@@ -323,7 +377,7 @@
              console.error('景点词云初始化失败:', error);
          }
  
-         // 评论词云初始化
+         // 初始化游客评价词云图表
          try {
              const commentCloudChart = echarts.init(document.getElementById('commentCloudChart'));
              const commentCloudOption = {
@@ -342,7 +396,7 @@
          }
      }
  
-     // 多种方式确保执行
+     // 使用多种方式确保词云初始化函数被执行
      if (document.readyState === 'complete') {
          initWordClouds();
      } else {
@@ -353,10 +407,12 @@
  </script>
  {% endblock %}
  
+ {# ECharts图表区块 - 包含星级占比和价格分析图表 #}
  {% block echarts %}
  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ {# ECharts图表初始化脚本 #}
  <script>
-   // 星级占比图表
+   // 初始化景点星级占比饼图
    var starRatioChart = echarts.init(document.getElementById('starRatioChart'));
    var starRatioOption = {
      title: {
@@ -412,7 +468,7 @@
      ]
    };
    starRatioChart.setOption(starRatioOption);
-   // 价格分析图表
+   // 初始化景点价格分析柱状图
    var priceAnalysisChart = echarts.init(document.getElementById('priceAnalysisChart'));
    var priceAnalysisOption = {
      title: {
