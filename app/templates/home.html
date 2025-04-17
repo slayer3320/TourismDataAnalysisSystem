@@ -38,7 +38,6 @@
     return {
       name: item.name,
       value: item.value,
-      // Add additional properties for future use
       itemStyle: {
         borderWidth: 1,
         borderColor: 'rgba(0, 0, 0, 0.2)'
@@ -61,8 +60,7 @@
       formatter: function(e, t, n) {
         let data = e.data;
         return data ? `<div style="font-size:14px;margin-bottom:5px;color:#409eff">${data.name}</div>
-                      <div>景点数量: <b>${data.value}</b></div>
-                      <div style="margin-top:5px;color:#666">点击查看省份分析</div>` 
+                      <div>景点数量: <b>${data.value}</b></div>`
                     : '暂未拥有数据'
       }
     },
@@ -72,51 +70,50 @@
       bottom: 40,
       showLabel:true,
       pieces: (function() {
-        // Calculate quantiles from the data
         const values = mydata.map(item => item.value).sort((a,b) => a - b);
         const n = values.length;
         const quantiles = [
-          values[Math.floor(n * 0.8)],  // 80th percentile
-          values[Math.floor(n * 0.6)],  // 60th
-          values[Math.floor(n * 0.4)],  // 40th
-          values[Math.floor(n * 0.2)],  // 20th
-          values[Math.floor(n * 0.1)]   // 10th
+          values[Math.floor(n * 0.8)],
+          values[Math.floor(n * 0.6)],
+          values[Math.floor(n * 0.4)],
+          values[Math.floor(n * 0.2)],
+          values[Math.floor(n * 0.1)]
         ];
 
         return [
           {
             gte: quantiles[0],
             label: `Top 20% (>=${quantiles[0]})`,
-            color: "#f38181"  // Coral (highest density)
+            color: "#f38181"
           },
           {
             gte: quantiles[1],
             lt: quantiles[0],
             label: `20-40% (${quantiles[1]}-${quantiles[0]})`,
-            color: "#fce38a"  // Yellow
+            color: "#fce38a"
           },
           {
             gte: quantiles[2],
             lt: quantiles[1],
             label: `40-60% (${quantiles[2]}-${quantiles[1]})`,
-            color: "#eaffd0"  // Light green
+            color: "#eaffd0"
           },
           {
             gte: quantiles[3],
             lt: quantiles[2],
             label: `60-80% (${quantiles[3]}-${quantiles[2]})`,
-            color: "#95e1d3"  // Teal
+            color: "#95e1d3"
           },
           {
             gte: quantiles[4],
             lt: quantiles[3],
             label: `80-90% (${quantiles[4]}-${quantiles[3]})`,
-            color: "#d3f6f3"  // Pale teal
+            color: "#d3f6f3"
           },
           {
             lt: quantiles[4],
             label: `Bottom 10% (<${quantiles[4]})`,
-            color: "#f0fdfa"  // Very pale teal
+            color: "#f0fdfa"
           }
         ];
       })()
@@ -131,7 +128,6 @@
       zoom: 1,
       top: 10,
       layoutSize: "100%",
-      // Add zoom control buttons
       roamController: {
         show: true,
         x: 'right',
@@ -150,7 +146,6 @@
           textBorderColor: '#000',
           textBorderWidth: 1,
           formatter: function(params) {
-            // Shorten long province names for better display
             const shortNames = {
               '内蒙古自治区': '内蒙古',
               '广西壮族自治区': '广西',
@@ -199,7 +194,6 @@
             areaColor: '#ff7f50'
           }
         },
-        // Add click event
         select: {
           itemStyle: {
             areaColor: '#ff7f50'
@@ -212,20 +206,16 @@
     ]
   }
   
-  // Hide loading when ready
   myChart.hideLoading();
   myChart.setOption(options);
   
-  // Handle click event - navigate to city analysis page with province filter
+  // 仅保留控制台日志，移除跳转功能
   myChart.on('click', function(params) {
     if(params.data) {
-      // Navigate to city analysis page with province filter
-      const province = encodeURIComponent(params.name);
-      window.location.href = `/app/citySidebarAnalysis?province=${province}&city=${province}`;
+      console.log(`当前选择省份: ${params.name}`);
     }
   });
   
-  // Handle window resize
   window.addEventListener('resize', function() {
     myChart.resize();
   });
