@@ -67,11 +67,32 @@ def cityCharDataOne():
 
 def cityCharDataTwo():
     cityDic = {}
+    other_levels = set()  # 记录所有非标准等级
+    
     for travel in travelInfoList:
-        if cityDic.get(travel.level, -1) == -1:
-            cityDic[travel.level] = 1
+        # 标准化景点等级名称
+        level = travel.level
+        if level == '5A景区' or level == '5A':
+            level = '5A'
+        elif level == '4A景区' or level == '4A':
+            level = '4A'
+        elif level == '3A景区' or level == '3A':
+            level = '3A'
+        elif not level or level.strip() == '':
+            level = '未评价'
         else:
-            cityDic[travel.level] += 1
+            other_levels.add(level)  # 收集非标准等级
+            level = '其他'
+            
+        if cityDic.get(level, -1) == -1:
+            cityDic[level] = 1
+        else:
+            cityDic[level] += 1
+    
+    # 打印非标准等级信息
+    if other_levels:
+        print(f"其他类包含以下非标准等级: {', '.join(other_levels)}")
+    
     resultData = []
     for key,value in cityDic.items():
         resultData.append({

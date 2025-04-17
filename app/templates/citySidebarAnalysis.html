@@ -30,8 +30,14 @@
      <div class="col-lg-12">
        <div class="card">
          <div class="card-body">
-           <h5 class="card-title">城市选择</h5>
-           <div class="alert alert-info mb-3" id="citySelectionAlert">
+           <div class="city-selection-container">
+             <div class="city-selection-title">
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="#4154f1" xmlns="http://www.w3.org/2000/svg">
+                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+               </svg>
+               <span>城市选择</span>
+             </div>
+             <div class="alert alert-info mb-3" id="citySelectionAlert">
              当前选择: <span id="currentProvince">{% if provinceList %}{{ provinceList.0 }}{% else %}{% endif %}</span> <span id="currentCity">{{ selectedCity }}</span>
            </div>
            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -96,33 +102,56 @@
                citySelect.change(function() {
                  $('#currentCity').text($(this).val());
                });
+
+               // 添加搜索功能
+               $('#citySelect').select2({
+                 placeholder: "搜索城市/风景区",
+                 allowClear: true,
+                 width: '100%',
+                 language: {
+                   noResults: function() {
+                     return "未找到匹配项";
+                   }
+                 }
+               });
+
+               // 省份变化时显示加载状态
+               provinceSelect.change(function() {
+                 $('#cityLoading').show();
+               });
+
+               // AJAX请求完成后隐藏加载状态
+               $(document).ajaxComplete(function() {
+                 $('#cityLoading').hide();
+               });
              });
            </script>
-           <div class="row mb-3">
-             <div class="col-sm-12">
-               <div class="row align-items-center mb-3">
-                 <div class="col-md-4">
-                   <div class="input-group mb-3">
-                     <span class="input-group-text">省份</span>
-                     <select id="provinceSelect" class="form-select">
-                       {% for province in provinceList %}
-                         <option value="{{ province }}">{{ province }}</option>
-                       {% endfor %}
-                     </select>
-                   </div>
-                 </div>
-                 <div class="col-md-4">
-                   <div class="input-group mb-3">
-                     <span class="input-group-text">城市/风景区</span>
-                     <select id="citySelect" name="city" class="form-select"></select>
+             </div>
+             <div class="city-selection-group">
+               <div class="input-group">
+                 <span class="input-group-text">省份</span>
+                 <select id="provinceSelect" class="form-select">
+                   {% for province in provinceList %}
+                     <option value="{{ province }}">{{ province }}</option>
+                   {% endfor %}
+                 </select>
+               </div>
+               <div class="input-group">
+                 <span class="input-group-text">城市/风景区</span>
+                 <div style="position: relative; flex: 1">
+                   <select id="citySelect" name="city" class="form-select"></select>
+                   <div id="cityLoading" class="position-absolute top-50 end-0 translate-middle-y me-2" style="display: none">
+                     <div class="spinner-border spinner-border-sm text-primary" role="status">
+                       <span class="visually-hidden">加载中...</span>
+                     </div>
                    </div>
                  </div>
                </div>
              </div>
-           </div>
-           <div class="row mt-3">
-             <div class="col-12 text-center">
-               <button id="confirmCityBtn" class="btn btn-primary mx-auto" style="width: 120px;">确定</button>
+             <div class="row mt-3">
+               <div class="col-12 text-center">
+                 <button id="confirmCityBtn" class="btn btn-primary mx-auto" style="width: 120px;">确定</button>
+               </div>
              </div>
            </div>
          </div>
@@ -332,28 +361,53 @@
    var starRatioOption = {
      title: {
        text: '景点星级占比',
-       left: 'center'
+       left: 'center',
+       subtextStyle: {
+         color: '#666',
+         fontSize: 12
+       }
      },
      tooltip: {
-       trigger: 'item'
+       trigger: 'item',
+       formatter: '{a}<br/>{b}: {c} ({d}%)'
      },
      legend: {
        orient: 'vertical',
-       left: 'left'
+       left: 'left',
+       formatter: function(name) {
+         var data = starRatioOption.series[0].data;
+         var item = data.find(function(item) {
+           return item.name === name;
+         });
+         return name + ': ' + item.value + '个';
+       }
      },
      series: [
        {
          name: '星级占比',
          type: 'pie',
-         radius: '50%',
-         data: {{ starRatioData | safe }},
+         radius: ['40%', '70%'],
+         avoidLabelOverlap: false,
+         itemStyle: {
+           borderRadius: 10,
+           borderColor: '#fff',
+           borderWidth: 2
+         },
+         label: {
+           show: true,
+           formatter: '{b}: {c} ({d}%)'
+         },
          emphasis: {
-           itemStyle: {
-             shadowBlur: 10,
-             shadowOffsetX: 0,
-             shadowColor: 'rgba(0, 0, 0, 0.5)'
+           label: {
+             show: true,
+             fontSize: '18',
+             fontWeight: 'bold'
            }
-         }
+         },
+         labelLine: {
+           show: true
+         },
+         data: {{ starRatioData | safe }}
        }
      ]
    };
