@@ -171,33 +171,6 @@ def cityChar(request):
         'province_names_json': province_names_json
     })
 
-def priceChar(request):
-    username = request.session.get('username')
-    userInfo = User.objects.get(username=username)
-    year, mon, day = getHomeData.getNowTime()
-    provinceList = getPublicData.getProvinceList()
-    cityList = getPublicData.getCityList()
-    travelList = getPublicData.getAllTravelInfoMapData()
-    xData,yData = getEchartsData.getPriceCharDataOne(travelList)
-    x1Data,y1Data = getEchartsData.getPriceCharDataTwo(travelList)
-    disCountPieData = getEchartsData.getPriceCharDataThree(travelList)
-    return render(request, 'priceChar.html', {
-        'userInfo': userInfo,
-        'nowTime': {
-            'year': year,
-            'mon': getPublicData.monthList[mon - 1],
-            'day': day
-        },
-        'cityList': cityList,
-        'echartsData':{
-            'xData':xData,
-            'yData':yData,
-            'x1Data':x1Data,
-            'y1Data':y1Data,
-            'disCountPieData':disCountPieData
-        }
-    })
-
 def commentsChar(request):
     username = request.session.get('username')
     userInfo = User.objects.get(username=username)
@@ -298,32 +271,6 @@ def recommendation(request, city=None):
         'provinceList': provinceList,
         'province5AData': province5AData,
         'travelList': travelList
-    })
-
-def detailIntroCloud(request):
-    username = request.session.get('username')
-    userInfo = User.objects.get(username=username)
-    year, mon, day = getHomeData.getNowTime()
-    return render(request, 'detailIntroCloud.html', {
-        'userInfo': userInfo,
-        'nowTime': {
-            'year': year,
-            'mon': getPublicData.monthList[mon - 1],
-            'day': day
-        }
-    })
-
-def commentContentCloud(request):
-    username = request.session.get('username')
-    userInfo = User.objects.get(username=username)
-    year, mon, day = getHomeData.getNowTime()
-    return render(request, 'commentContentCloud.html', {
-        'userInfo': userInfo,
-        'nowTime': {
-            'year': year,
-            'mon': getPublicData.monthList[mon - 1],
-            'day': day
-        }
     })
 
 def citySidebarAnalysis(request):
