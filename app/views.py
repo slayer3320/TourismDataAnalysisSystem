@@ -171,33 +171,6 @@ def cityChar(request):
         'province_names_json': province_names_json
     })
 
-def rateChar(request):
-    username = request.session.get('username')
-    userInfo = User.objects.get(username=username)
-    year, mon, day = getHomeData.getNowTime()
-    provinceList = getPublicData.getProvinceList()
-    cityList = getPublicData.getCityList(provinceList[0])
-    travelList = getPublicData.getAllTravelInfoMapData(cityList[0] if cityList else None)
-    charOneData = getEchartsData.getRateCharDataOne(travelList)
-    charTwoData = getEchartsData.getRateCharDataTwo(travelList)
-    if request.method == 'POST':
-        travelList = getPublicData.getAllTravelInfoMapData(request.POST.get('province'))
-        charOneData = getEchartsData.getRateCharDataOne(travelList)
-        charTwoData = getEchartsData.getRateCharDataTwo(travelList)
-
-
-    return render(request, 'rateChar.html', {
-        'userInfo': userInfo,
-        'nowTime': {
-            'year': year,
-            'mon': getPublicData.monthList[mon - 1],
-            'day': day
-        },
-        'cityList':cityList,
-        'charOneData':charOneData,
-        'charTwoData':charTwoData
-    })
-
 def priceChar(request):
     username = request.session.get('username')
     userInfo = User.objects.get(username=username)

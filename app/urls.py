@@ -12,7 +12,6 @@ urlpatterns = [
     path('tableData/',views.tableData, name='tableData'),
     path('addComments/<int:id>/',views.addComments, name='addComments'),
     path('cityChar/',views.cityChar, name='cityChar'),
-    path('rateChar/',views.rateChar, name='rateChar'),
     path('priceChar/',views.priceChar, name='priceChar'),
     path('commentsChar/',views.commentsChar, name='commentsChar'),
     path('recommendation/',views.recommendation, name='recommendation'),
