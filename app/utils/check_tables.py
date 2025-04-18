@@ -215,7 +215,7 @@ def get_scenic_spots_list(city_name):
         # id,city_id,name,grade,address,type,intro,ticket_price,score,heat,comments,url
         query = """
             SELECT s.id, s.name, s.grade, s.score, s.ticket_price,
-                   i.url as image_url, s.address, s.type, s.intro, s.heat, s.comments
+                   i.url as image_url, s.url, s.address, s.type, s.intro, s.heat, s.comments
             FROM scenic_spots s
             LEFT JOIN scenic_images i ON s.id = i.id
             WHERE s.city_id = %s
